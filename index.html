@@ -1,822 +1,571 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طاولة 31</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #2c1a04;
-            --board-wood: #5c3a21;
-            --board-felt: #1b4d3e; /* أخضر زيتي */
-            --gold: #d4af37;
-            --white-piece: #f4ebd0;
-            --black-piece: #1a1a1a;
-            --valid-move: #2ecc71;
-            --combo-move: #3498db; /* أزرق للحركة المجمعة */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طاولة 31</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--wood:#2a1209;--wood2:#5c2d12;--wood3:#7a4a24;--felt:#0f5132;--gold:#D4AF37;--gold2:#f0d060;--amber:#b87333;--cream:#f5e6c8;--locked:#c41e3a;--teal:#0d9488}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow-x:hidden;color:#fff}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg-color); color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 10px; }
-        
-        .header { text-align: center; margin-bottom: 5px; width: 100%; max-width: 1000px; }
-        .credits { font-size: 0.75rem; color: #aaa; letter-spacing: 1px; }
-        .title { color: var(--gold); font-size: 2rem; margin-top: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); }
+.cafe-bg{min-height:100vh;background:radial-gradient(ellipse at 50% 30%,rgba(180,120,40,.12),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(100,50,15,.08),transparent 50%),linear-gradient(#0c0603,#060301);position:relative;overflow:hidden}
+.cafe-bg::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 30L30 55L5 30Z' fill='none' stroke='rgba(212,175,55,0.02)' stroke-width='.5'/%3E%3Ccircle cx='30' cy='30' r='2' fill='rgba(212,175,55,0.015)'/%3E%3C/svg%3E");pointer-events:none}
 
-        /* لوحة التحكم والأنماط */
-        .controls { display: flex; gap: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px; border: 1px solid var(--gold); }
-        button { background: var(--gold); color: #000; border: none; padding: 8px 15px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #fff; }
-        input { padding: 6px; border-radius: 4px; border: none; text-align: center; width: 140px; }
+.steam{position:absolute;width:2px;background:linear-gradient(to top,rgba(200,170,120,.12),transparent);border-radius:50%;animation:steamRise 4s ease-in infinite;pointer-events:none}
+@keyframes steamRise{0%{opacity:0;transform:translateY(0) scaleX(1)}30%{opacity:.5}70%{opacity:.2;transform:translateY(-80px) scaleX(2)}100%{opacity:0;transform:translateY(-140px) scaleX(3)}}
 
-        /* لوحة النتائج */
-        .scoreboard { display: flex; justify-content: space-between; width: 100%; max-width: 1000px; background: var(--board-wood); padding: 8px 20px; border-radius: 5px; border: 2px solid var(--gold); margin-bottom: 10px; font-weight: bold; }
-        .player-status { display: flex; align-items: center; gap: 8px; }
-        .badge { background: #e74c3c; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; display: none; }
-        .badge.active { display: inline-block; }
-        .match-score { color: var(--gold); font-size: 1.2rem; }
+.cafe-logo{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cafe-icon{font-size:44px;color:var(--amber);filter:drop-shadow(0 2px 10px rgba(184,115,51,.3))}
+.cafe-title{font-size:clamp(42px,10vw,70px);font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--amber),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.cafe-divider{width:140px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:6px 0}
 
-        /* رقعة الطاولة */
-        .board-container { display: flex; background: var(--board-wood); padding: 15px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 8px solid #422817; width: 100%; max-width: 1000px; height: 500px; position: relative; }
-        .board-half { display: flex; flex-direction: column; width: calc(50% - 20px); height: 100%; background: var(--board-felt); position: relative; }
-        .bar { width: 40px; background: #422817; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .tray { width: 40px; background: #311d10; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0; border-left: 2px solid var(--gold); }
+.btn{padding:12px 24px;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);pointer-events:none}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--wood);box-shadow:0 4px 14px rgba(212,175,55,.2)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,175,55,.35)}
+.btn-wood{background:linear-gradient(135deg,var(--wood2),var(--wood3));color:var(--cream);border:1px solid rgba(212,175,55,.15);box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.btn-wood:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(92,45,18,.4);border-color:var(--gold)}
+.btn-outline{background:transparent;color:var(--gold);border:2px solid rgba(212,175,55,.35)}
+.btn-outline:hover{background:rgba(212,175,55,.06);transform:translateY(-2px)}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
+.menu-btns{display:flex;flex-direction:column;gap:10px;width:min(300px,85vw)}
 
-        .quadrant { display: flex; width: 100%; height: 50%; }
-        .quadrant.top { border-bottom: 2px solid var(--board-wood); }
-        .point { width: calc(100% / 6); height: 100%; position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        
-        /* رسم المثلثات (النقاط) */
-        .point::before { content: ''; position: absolute; width: 0; height: 0; border-left: calc(1000px / 26 / 2) solid transparent; border-right: calc(1000px / 26 / 2) solid transparent; pointer-events: none; }
-        .top .point::before { top: 0; border-top: 160px solid rgba(212, 175, 55, 0.15); }
-        .top .point:nth-child(even)::before { border-top-color: rgba(255,255,255,0.05); }
-        .bottom .point::before { bottom: 0; border-bottom: 160px solid rgba(212, 175, 55, 0.15); }
-        .bottom .point:nth-child(even)::before { border-bottom-color: rgba(255,255,255,0.05); }
+.signature{position:fixed;top:8px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(212,175,55,.22);letter-spacing:1.5px;font-weight:600;z-index:999;pointer-events:none;white-space:nowrap}
 
-        .top .point { flex-direction: column; }
-        .bottom .point { flex-direction: column-reverse; }
+.lobby{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
+.lobby-card{background:linear-gradient(135deg,rgba(50,25,8,.7),rgba(30,15,5,.85));border:1px solid rgba(212,175,55,.18);border-radius:14px;padding:24px 28px;text-align:center;max-width:380px;width:90%;backdrop-filter:blur(4px)}
+.lobby-card h3{color:var(--gold);font-size:18px;margin-bottom:10px}
+.lobby-card p{color:rgba(255,255,255,.45);font-size:13px}
+.room-code{font-size:38px;font-weight:900;letter-spacing:6px;color:var(--gold2);margin:14px 0;background:rgba(0,0,0,.5);padding:10px 20px;border-radius:10px;border:2px dashed rgba(212,175,55,.2)}
+.spinner{width:30px;height:30px;border:3px solid rgba(212,175,55,.12);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:12px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.join-input{background:rgba(0,0,0,.5);border:2px solid rgba(212,175,55,.2);border-radius:10px;padding:10px 16px;color:#fff;font-family:'Cairo',sans-serif;font-size:22px;font-weight:700;text-align:center;letter-spacing:5px;width:100%;max-width:220px;outline:none}
+.join-input:focus{border-color:var(--gold)}
 
-        /* قطع اللعب */
-        .checker { width: 32px; height: 32px; border-radius: 50%; margin: -4px 0; z-index: 2; position: relative; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.4); transition: transform 0.2s; }
-        .checker.white { background: radial-gradient(circle, #fff 30%, var(--white-piece) 100%); color: #000; border: 1px solid #ccc; }
-        .checker.black { background: radial-gradient(circle, #444 10%, var(--black-piece) 100%); color: #fff; border: 1px solid #000; }
-        .checker.selected { transform: scale(1.1); border: 2px solid var(--gold) !important; box-shadow: 0 0 12px var(--gold); }
-        .checker .lock-icon { font-size: 12px; color: #e74c3c; }
+.game-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:8px;position:relative}
+.game-header{display:flex;align-items:center;justify-content:space-between;width:min(820px,96vw);margin-bottom:4px;padding:0 4px}
+.player-tag{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;transition:all .3s}
+.player-tag.w{background:rgba(245,230,200,.08);color:var(--cream);border:1.5px solid rgba(245,230,200,.12)}
+.player-tag.b{background:rgba(0,0,0,.5);color:#888;border:1.5px solid rgba(255,255,255,.06)}
+.player-tag.active{box-shadow:0 0 16px rgba(212,175,55,.4);border-color:var(--gold)!important}
+.player-tag .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.player-tag.w .dot{background:linear-gradient(135deg,#fff,#c8b898);border:1px solid #a89878}
+.player-tag.b .dot{background:linear-gradient(135deg,#444,#111);border:1px solid #555}
+.tag-info{font-size:11px;opacity:.55}
+.lock-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(196,30,58,.2);color:#f88;border:1px solid rgba(196,30,58,.25);margin-right:4px}
+#boardCanvas{max-width:96vw;max-height:66vh;cursor:pointer;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 80px rgba(212,175,55,.04)}
+.game-footer{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;flex-wrap:wrap}
+.turn-msg{font-size:13px;font-weight:700;color:var(--gold);text-align:center;min-height:20px}
 
-        /* تمييز النقاط المتاحة للحركة */
-        .point.highlight-normal { background: rgba(46, 204, 113, 0.3) !important; }
-        .point.highlight-combo { background: rgba(52, 152, 219, 0.4) !important; }
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(15,8,3,.95);color:#fff;padding:9px 24px;border-radius:9px;font-size:13px;font-weight:700;border:1px solid var(--gold);z-index:1000;transition:transform .4s ease;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-        /* منطقة رمي الزهر والـ UI في الصينية/البار */
-        .dice-area { display: flex; gap: 8px; margin: 10px 0; }
-        .die { width: 30px; height: 30px; background: white; color: black; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.5); border: 1px solid #aaa; }
-        .die.used { opacity: 0.4; }
-
-        /* النوافذ المنبثقة (Modals) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
-        .modal-content { background: var(--board-wood); border: 3px solid var(--gold); padding: 30px; border-radius: 12px; text-align: center; max-width: 450px; width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
-        .modal-content h3 { color: var(--gold); margin-bottom: 15px; font-size: 1.6rem; }
-        .modal-dice-view { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
-        .modal-die-box { background: #fff; color: #000; padding: 15px 25px; font-size: 2rem; font-weight: bold; border-radius: 8px; border: 2px solid #ccc; box-shadow: inset 0 0 8px rgba(0,0,0,0.2); }
-        .modal-die-box.white-roll { border-color: var(--white-piece); background: var(--white-piece); }
-        .modal-die-box.black-roll { border-color: #000; background: #333; color: #fff; }
-        
-        .tray-zone { display: flex; flex-direction: column; align-items: center; height: 45%; justify-content: flex-start; gap: 2px; overflow: hidden; }
-
-        #network-status { font-size: 0.85rem; color: #e74c3c; margin-top: 5px; font-weight: bold; }
-    </style>
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal{background:linear-gradient(135deg,#120805,#1f0f06);border:2px solid var(--gold);border-radius:14px;padding:24px 28px;text-align:center;max-width:360px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.modal h2{font-size:22px;font-weight:900;color:var(--gold);margin-bottom:6px}
+.modal p{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:4px}
+.init-roll-area{display:flex;align-items:center;justify-content:center;gap:20px;margin:10px 0}
+.init-die-box{text-align:center}
+.init-die-box .label{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:4px}
+.hidden{display:none!important}
+@keyframes confettiFall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.lantern{position:absolute;width:28px;height:38px;pointer-events:none;opacity:.12}
+.lantern::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse,var(--amber),transparent);border-radius:50% 50% 40% 40%;animation:lanternGlow 3s ease-in-out infinite}
+@keyframes lanternGlow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+</style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="credits">Created by Saher</div>
-        <div class="title">طاولة 31</div>
-    </div>
+<div class="signature">Created by Saher</div>
 
-    <div class="controls">
-        <button onclick="setMode('local')">على نفس الجهاز</button>
-        <button onclick="setMode('ai')">ضد الكمبيوتر</button>
-        <button onclick="startOnlineRoom()">إنشاء غرفة أونلاين</button>
-        <div style="display:inline-block;">
-            <input type="text" id="room-code-input" placeholder="أدخل كود الغرفة...">
-            <button onclick="joinOnlineRoom()">انضمام</button>
-        </div>
-        <div id="network-status">النمط الحالي: نفس الجهاز</div>
-    </div>
+<!-- ===== القائمة ===== -->
+<div id="menuScreen" class="cafe-bg" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px">
+<div id="steamContainer"></div>
+<div class="lantern" style="top:10%;left:15%"></div>
+<div class="lantern" style="top:8%;right:18%"></div>
+<div class="lantern" style="top:25%;left:8%"></div>
+<div class="cafe-logo">
+<div class="cafe-icon"><i class="fas fa-dice"></i></div>
+<div class="cafe-title">طاولة 31</div>
+<div class="cafe-divider"></div>
+</div>
+<div class="menu-btns">
+<button class="btn btn-gold" onclick="startAI()"><i class="fas fa-robot"></i> العب ضد الكمبيوتر</button>
+<button class="btn btn-wood" onclick="showCreate()"><i class="fas fa-wifi"></i> أنشئ غرفة أونلاين</button>
+<button class="btn btn-wood" onclick="showJoin()"><i class="fas fa-sign-in-alt"></i> انضم لغرفة</button>
+<button class="btn btn-outline" onclick="startLocal()"><i class="fas fa-users"></i> العب على نفس الجهاز</button>
+</div>
+</div>
 
-    <div class="scoreboard">
-        <div class="player-status">
-            <span>اللاعب الأبيض (كريمي):</span>
-            <span id="score-white">0</span> / 31
-            <span id="lock-badge-white" class="badge active">مقفل 🔒</span>
-        </div>
-        <div id="turn-indicator" style="color: var(--gold);">انتظر تحديد البداية...</div>
-        <div class="player-status">
-            <span>اللاعب الأسود (لامع):</span>
-            <span id="score-black">0</span> / 31
-            <span id="lock-badge-black" class="badge active">مقفل 🔒</span>
-        </div>
-    </div>
+<!-- ===== إنشاء غرفة ===== -->
+<div id="createScreen" class="cafe-bg lobby hidden">
+<div class="lobby-card">
+<h3><i class="fas fa-wifi"></i> غرفتك جاهزة</h3>
+<p>ابعت الكود ده لصاحبك</p>
+<div class="room-code" id="roomCodeDisplay">------</div>
+<p style="font-size:11px;margin-top:6px">أنت هتلعب بالأبيض</p>
+<div class="spinner"></div>
+<p style="font-size:12px;color:rgba(255,255,255,.28)">مستني صاحبك يدخل...</p>
+</div>
+<button class="btn btn-outline btn-sm" onclick="backToMenu()"><i class="fas fa-arrow-right"></i> رجوع</button>
+</div>
 
-    <div class="board-container">
-        <div class="board-half" id="half-right">
-            <div class="quadrant top" id="quad-top-right"></div>
-            <div class="quadrant bottom" id="quad-bottom-right"></div>
-        </div>
+<!-- ===== الانضمام ===== -->
+<div id="joinScreen" class="cafe-bg lobby hidden">
+<div class="lobby-card">
+<h3><i class="fas fa-sign-in-alt"></i> انضم لغرفة</h3>
+<p>اكتب كود الغرفة</p>
+<input class="join-input" id="joinInput" maxlength="6" placeholder="------" oninput="this.value=this.value.toUpperCase()">
+<div style="margin-top:14px">
+<button class="btn btn-gold btn-sm" onclick="doJoin()" style="width:auto;padding:9px 28px"><i class="fas fa-play"></i> انضم</button>
+</div>
+<p style="font-size:11px;margin-top:8px;color:rgba(255,255,255,.28)">أنت هتلعب بالأسود</p>
+</div>
+<button class="btn btn-outline btn-sm" onclick="backToMenu()"><i class="fas fa-arrow-right"></i> رجوع</button>
+</div>
 
-        <div class="bar">
-            <div style="text-align: center;">
-                <button id="roll-btn" disabled onclick="rollDice()">إرمِ</button>
-                <div class="dice-area" id="main-dice-container"></div>
-            </div>
-        </div>
+<!-- ===== اللعبة ===== -->
+<div id="gameScreen" class="game-wrap hidden" style="background:radial-gradient(ellipse at 50% 50%,rgba(15,81,50,.06),transparent 60%),radial-gradient(ellipse at 30% 20%,rgba(100,60,15,.06),transparent 50%),#060301">
+<div class="game-header">
+<div class="player-tag b" id="blackTag"><div class="dot"></div><span id="blackLabel">الأسود</span><span class="tag-info" id="bInfo"></span><span class="lock-badge hidden" id="bLock"><i class="fas fa-lock"></i> مقفل</span></div>
+<div class="turn-msg" id="turnMsg">ارمي الزهر</div>
+<div class="player-tag w" id="whiteTag"><span>الأبيض</span><div class="dot"></div><span class="tag-info" id="wInfo"></span><span class="lock-badge hidden" id="wLock"><i class="fas fa-lock"></i> مقفل</span></div>
+</div>
+<canvas id="boardCanvas" width="820" height="520"></canvas>
+<div class="game-footer">
+<button class="btn btn-gold btn-sm" id="rollBtn" onclick="handleRoll()"><i class="fas fa-dice"></i> ارمي الزهر</button>
+<button class="btn btn-wood btn-sm" id="undoBtn" onclick="undoMove()" disabled><i class="fas fa-undo"></i> رجع</button>
+<button class="btn btn-outline btn-sm" id="endBtn" onclick="forceEndTurn()" disabled><i class="fas fa-forward"></i> خلص دوري</button>
+</div>
+</div>
 
-        <div class="board-half" id="half-left">
-            <div class="quadrant top" id="quad-top-left"></div>
-            <div class="quadrant bottom" id="quad-bottom-left"></div>
-        </div>
+<!-- ===== تحديد من يبدأ ===== -->
+<div id="initModal" class="modal-bg hidden">
+<div class="modal">
+<h2>مين يبدأ؟</h2>
+<p>كل واحد يرمي زهرته - اللي يجيب أكبر يبدأ</p>
+<div class="init-roll-area">
+<div class="init-die-box"><div class="label">الأبيض</div><canvas id="initDieW" width="50" height="50"></canvas></div>
+<div style="font-size:20px;font-weight:900;color:var(--gold)">VS</div>
+<div class="init-die-box"><div class="label">الأسود</div><canvas id="initDieB" width="50" height="50"></canvas></div>
+</div>
+<p id="initMsg" style="color:var(--gold2);font-weight:700;min-height:20px"></p>
+<button class="btn btn-gold btn-sm" id="initRollBtn" onclick="doInitRoll()" style="width:auto;padding:8px 24px;margin-top:8px"><i class="fas fa-dice"></i> ارمي</button>
+</div>
+</div>
 
-        <div class="tray">
-            <div class="tray-zone" id="tray-white" title="أحجار الأبيض الخارجة"></div>
-            <div class="tray-zone" id="tray-black" title="أحجار الأسود الخارجة"></div>
-        </div>
-    </div>
+<!-- ===== نهاية اللعبة ===== -->
+<div id="gameOverModal" class="modal-bg hidden">
+<div class="modal">
+<h2 id="goTitle">انتهت اللعبة</h2>
+<p id="goMsg"></p>
+<div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+<button class="btn btn-gold btn-sm" onclick="restartGame()"><i class="fas fa-redo"></i> العب تاني</button>
+<button class="btn btn-outline btn-sm" onclick="backToMenu()"><i class="fas fa-home"></i> القائمة</button>
+</div>
+</div>
+</div>
 
-    <div id="start-modal" class="modal" style="display: flex;">
-        <div class="modal-content">
-            <h3>تحديد من يبدأ اللعب أولاً 🎲</h3>
-            <p>سيقوم كلا اللاعبين برمي زهر واحد، وصاحب الرقم الأعلى يبدأ الجيم.</p>
-            <div class="modal-dice-view">
-                <div>
-                    <p style="color:var(--white-piece); margin-bottom:5px;">الأبيض</p>
-                    <div id="modal-die-w" class="modal-die-box white-roll">-</div>
-                </div>
-                <div>
-                    <p style="color:#000; margin-bottom:5px; font-weight:bold;">الأسود</p>
-                    <div id="modal-die-b" class="modal-die-box black-roll">-</div>
-                </div>
-            </div>
-            <p id="modal-status-text" style="margin: 15px 0; font-weight: bold; color: var(--gold);"></p>
-            <button id="modal-action-btn" onclick="executeModalRoll()">ارمي الزهر</button>
-        </div>
-    </div>
+<div id="toast" class="toast"></div>
 
-    <div id="end-modal" class="modal">
-        <div class="modal-content">
-            <h3 id="end-title">انتهاء الجيم!</h3>
-            <p id="end-details" style="margin: 15px 0; line-height: 1.6;"></p>
-            <button id="end-action-btn" onclick="resetGameForNextRound()">الجيم الجاي</button>
-        </div>
-    </div>
+<script>
+const CW=820,CH=520,FR=14,BAR=46,TRAY=44;
+const PW=(CW-2*FR-BAR-TRAY)/12;
+const PH=195,CR=PW/2-3;
+const CC={fr:'#2a1209',fr2:'#5c2d12',fr3:'#7a4a24',felt:'#0f5132',t1:'#c9a06c',t2:'#7a2e28',barC:'#1f0e05',trayC:'#1f0e05'};
 
-    <script>
-        /**
-         * تمثيل بنية رقعة طاولة 31:
-         * نقاط الطاولة مرقمة من 1 إلى 24.
-         * البداية: الأبيض 15 حجر على نقطة 24. الأسود 15 حجر على نقطة 1.
-         * اتجاه الأبيض: من 24 نزولاً إلى 1، ثم يخرج إلى صينية الأبيض.
-         * اتجاه الأسود: من 1 صعوداً إلى 24، ثم يخرج إلى صينية الأسود.
-         */
+let G={
+    pts:[],off:{w:0,b:0},turn:'w',dice:[],ml:[],
+    phase:'init',sel:-1,validDests:[],moveStack:[],
+    myColor:null,isOnline:false,isAI:false,
+    peer:null,conn:null,roomCode:'',
+    initStep:0,initRolls:{w:0,b:0},
+    startLocked:{w:true,b:true}
+};
 
-        let gameState = {
-            board: {}, // المفاتيح من 1 إلى 24. القيمة: { count: number, color: 'white'|'black' }
-            scores: { white: 0, black: 0 }, // النتيجة التراكمية للفورة (31)
-            turn: null, // 'white' أو 'black'
-            dice: [], // مصفوفة الحركات المتاحة (مثلاً [5, 1] أو [6,6,6,6])
-            hasRolled: false,
-            selectedPoint: null,
-            isLocked: { white: true, black: true }, // قانون القفل لكل لاعب
-            gameMode: 'local', // 'local', 'ai', 'online'
-            myColor: 'white', // للاونلاين
-            borneOff: { white: 0, black: 0 } // الأحجار التي خرجت بالفعل
-        };
+function createSteam(){
+    let c=document.getElementById('steamContainer');if(!c)return;
+    setInterval(()=>{
+        if(document.getElementById('menuScreen').classList.contains('hidden'))return;
+        let s=document.createElement('div');s.className='steam';
+        s.style.left=Math.random()*80+10+'%';s.style.bottom=Math.random()*20+'%';
+        s.style.height=20+Math.random()*30+'px';s.style.animationDuration=3+Math.random()*3+'s';
+        c.appendChild(s);setTimeout(()=>s.remove(),6000);
+    },400);
+}
 
-        // متغيرات الأونلاين (PeerJS)
-        let peer = null;
-        let conn = null;
+function initBoard(){
+    G.pts=Array.from({length:24},()=>({c:null,n:0}));
+    G.pts[23]={c:'w',n:15};G.pts[0]={c:'b',n:15};
+    G.off={w:0,b:0};G.dice=[];G.ml=[];G.phase='init';
+    G.sel=-1;G.validDests=[];G.moveStack=[];
+    G.initStep=0;G.initRolls={w:0,b:0};
+    G.startLocked={w:true,b:true};
+}
 
-        // مصفوفة لترتيب عرض النقاط لتطابق شكل طاولة الزهر الحقيقية
-        const topRightIndices = [24, 23, 22, 21, 20, 19];
-        const topLeftIndices = [18, 17, 16, 15, 14, 13];
-        const bottomLeftIndices = [7, 8, 9, 10, 11, 12];
-        const bottomRightIndices = [1, 2, 3, 4, 5, 6];
+function hasEnteredOpponentLand(c){
+    if(c==='w'){for(let i=0;i<=11;i++)if(G.pts[i].c==='w'&&G.pts[i].n>0)return true;}
+    else{for(let i=12;i<=23;i++)if(G.pts[i].c==='b'&&G.pts[i].n>0)return true;}
+    return false;
+}
 
-        // تهيئة اللعبة عند التشغيل
-        function initGame() {
-            // تفريغ اللوحة
-            for(let i=1; i<=24; i++) {
-                gameState.board[i] = { count: 0, color: null };
-            }
-            // وضع الأحجار الابتدائية لطاولة 31
-            gameState.board[24] = { count: 15, color: 'white' };
-            gameState.board[1] = { count: 15, color: 'black' };
+function canMoveFromPoint(c,from){
+    let startPt=c==='w'?23:0;
+    if(from!==startPt)return true;
+    if(hasEnteredOpponentLand(c)){G.startLocked[c]=false;return true;}
+    for(let i=0;i<24;i++){if(i===startPt)continue;if(G.pts[i].c===c&&G.pts[i].n>0)return false;}
+    return true;
+}
 
-            gameState.isLocked.white = true;
-            gameState.isLocked.black = true;
-            gameState.borneOff.white = 0;
-            gameState.borneOff.black = 0;
-            gameState.dice = [];
-            gameState.hasRolled = false;
-            gameState.selectedPoint = null;
+const cv=document.getElementById('boardCanvas');
+const cx=cv.getContext('2d');
 
-            document.getElementById('lock-badge-white').classList.add('active');
-            document.getElementById('lock-badge-black').classList.add('active');
+function ptVis(i){
+    let isTop=i>=12,col=isTop?i-12:11-i;
+    let x=col<6?FR+col*PW+PW/2:FR+6*PW+BAR+(col-6)*PW+PW/2;
+    return{x,isTop,col};
+}
 
-            buildBoardDOM();
-            updateUI();
+function render(){
+    cx.clearRect(0,0,CW,CH);
+    drawBoard();drawTriangles();drawCheckers();drawTray();drawDice();drawHighlights();drawPointNums();
+    updateLockBadges();updateUI();
+}
+
+function drawBoard(){
+    cx.fillStyle=CC.fr;cx.fillRect(0,0,CW,CH);
+    cx.fillStyle=CC.fr2;cx.fillRect(3,3,CW-6,CH-6);
+    cx.fillStyle=CC.fr;cx.fillRect(6,6,CW-12,CH-12);
+    cx.fillStyle=CC.fr3;cx.fillRect(8,8,CW-16,CH-16);
+    cx.fillStyle=CC.fr;cx.fillRect(10,10,CW-20,CH-20);
+    cx.fillStyle=CC.felt;cx.fillRect(FR,FR,CW-2*FR-TRAY,CH-2*FR);
+    let lg=cx.createRadialGradient(CW/2-TRAY/2,CH/2,50,CW/2-TRAY/2,CH/2,350);
+    lg.addColorStop(0,'rgba(255,240,180,0.025)');lg.addColorStop(1,'transparent');
+    cx.fillStyle=lg;cx.fillRect(FR,FR,CW-2*FR-TRAY,CH-2*FR);
+    cx.fillStyle=CC.barC;cx.fillRect(FR+6*PW,FR,BAR,CH-2*FR);
+    cx.fillStyle='rgba(212,175,55,0.06)';cx.fillRect(FR+6*PW,FR,1,CH-2*FR);cx.fillRect(FR+6*PW+BAR-1,FR,1,CH-2*FR);
+    cx.strokeStyle='rgba(212,175,55,0.05)';cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(FR,CH/2);cx.lineTo(FR+6*PW,CH/2);cx.stroke();
+    cx.beginPath();cx.moveTo(FR+6*PW+BAR,CH/2);cx.lineTo(CW-FR-TRAY,CH/2);cx.stroke();
+}
+
+function drawTriangles(){
+    for(let i=0;i<24;i++){
+        let{x,isTop,col}=ptVis(i);
+        cx.beginPath();
+        if(isTop){cx.moveTo(x-PW/2+2,FR);cx.lineTo(x+PW/2-2,FR);cx.lineTo(x,FR+PH);}
+        else{cx.moveTo(x-PW/2+2,CH-FR);cx.lineTo(x+PW/2-2,CH-FR);cx.lineTo(x,CH-FR-PH);}
+        cx.closePath();cx.fillStyle=col%2===0?CC.t1:CC.t2;cx.fill();
+    }
+}
+
+function drawPointNums(){
+    cx.font='9px Cairo';cx.textAlign='center';
+    for(let i=0;i<24;i++){
+        let{x,isTop}=ptVis(i);
+        cx.fillStyle='rgba(212,175,55,0.15)';
+        if(isTop)cx.fillText(i+1,x,FR+PH+14);
+        else cx.fillText(i+1,x,CH-FR-PH-8);
+    }
+}
+
+function drawChecker(px,py,color,rad){
+    let r=rad||CR;
+    cx.beginPath();cx.arc(px+1.5,py+2.5,r,0,Math.PI*2);cx.fillStyle='rgba(0,0,0,0.3)';cx.fill();
+    cx.beginPath();cx.arc(px,py,r,0,Math.PI*2);
+    let g=cx.createRadialGradient(px-r/3,py-r/3,0,px,py,r);
+    if(color==='w'){g.addColorStop(0,'#fffef5');g.addColorStop(1,'#c8b898');}
+    else{g.addColorStop(0,'#4a4a4a');g.addColorStop(1,'#0c0c0c');}
+    cx.fillStyle=g;cx.fill();
+    cx.strokeStyle=color==='w'?'#a89878':'#2a2a2a';cx.lineWidth=1.5;cx.stroke();
+    cx.beginPath();cx.arc(px,py,r*0.5,0,Math.PI*2);
+    cx.strokeStyle=color==='w'?'rgba(160,130,80,0.2)':'rgba(200,170,100,0.12)';cx.lineWidth=1;cx.stroke();
+    cx.beginPath();cx.arc(px-r*0.25,py-r*0.25,r*0.15,0,Math.PI*2);
+    cx.fillStyle=color==='w'?'rgba(255,255,255,0.35)':'rgba(255,255,255,0.06)';cx.fill();
+}
+
+function drawCheckers(){
+    for(let i=0;i<24;i++){
+        let p=G.pts[i];if(!p.n)continue;
+        let{x,isTop}=ptVis(i);
+        let cnt=Math.min(p.n,5);
+        let gap=p.n>5?Math.min((CR*2-2),(PH-CR*2)/(p.n-1)):CR*2-2;
+        for(let j=0;j<cnt;j++){
+            let cy=isTop?FR+CR+3+j*gap:CH-FR-CR-3-j*gap;
+            drawChecker(x,cy,p.c);
         }
-
-        // بناء عناصر رقعة الدوم HTML
-        function buildBoardDOM() {
-            const createPoints = (indices, containerId) => {
-                const container = document.getElementById(containerId);
-                container.innerHTML = '';
-                indices.forEach(i => {
-                    const pt = document.createElement('div');
-                    pt.className = 'point';
-                    pt.dataset.index = i;
-                    pt.onclick = () => onPointClick(i);
-                    container.appendChild(pt);
-                });
-            };
-
-            createPoints(topRightIndices, 'quad-top-right');
-            createPoints(topLeftIndices, 'quad-top-left');
-            createPoints(bottomLeftIndices, 'quad-bottom-left');
-            createPoints(bottomRightIndices, 'quad-bottom-right');
+        if(p.n>1){
+            let cy=isTop?FR+CR+3+(cnt-1)*gap:CH-FR-CR-3-(cnt-1)*gap;
+            cx.fillStyle=p.c==='w'?'rgba(50,25,0,0.85)':'rgba(255,210,130,0.9)';
+            cx.font='bold 13px Cairo';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(p.n,x,cy);
         }
+    }
+}
 
-        // تحديث الرسوميات وعرض الأحجار
-        function updateUI() {
-            // رسم الأحجار على النقاط
-            for(let i=1; i<=24; i++) {
-                const ptDOM = document.querySelector(`.point[data-index="${i}"]`);
-                if(!ptDOM) continue;
-                ptDOM.innerHTML = '';
-                
-                const data = gameState.board[i];
-                if(data.count > 0) {
-                    // إظهار حتى 5 أحجار متراكمة وما فوقها يكتب كرقم على آخر حجر لإتاحة الرؤية وسهولة اللعب
-                    const visibleCheckers = Math.min(data.count, 5);
-                    for(let j=0; j<visibleCheckers; j++) {
-                        const ch = document.createElement('div');
-                        ch.className = `checker ${data.color}`;
-                        
-                        // تمييز الحجر المحدد
-                        if(gameState.selectedPoint === i && j === visibleCheckers - 1) {
-                            ch.classList.add('selected');
-                        }
-
-                        // إضافة قفل مرئي إذا كان الحجر يخضع لقانون القفل
-                        if(isPointLocked(i, data.color) && j === visibleCheckers - 1) {
-                            ch.innerHTML = `<span class="lock-icon">🔒</span>`;
-                        }
-
-                        // إذا كان هناك أكثر من 5 أحجار، نكتب العدد الإجمالي على الحجر الأخير
-                        if(j === visibleCheckers - 1 && data.count > 5) {
-                            ch.innerText = data.count;
-                        }
-
-                        ptDOM.appendChild(ch);
-                    }
-                }
-            }
-
-            // تحديث صينية الأحجار الخارجة
-            updateTray('tray-white', 'white', gameState.borneOff.white);
-            updateTray('tray-black', 'black', gameState.borneOff.black);
-
-            // تحديث لوحة التحكم والأزرار والرموز
-            document.getElementById('score-white').innerText = gameState.scores.white;
-            document.getElementById('score-black').innerText = gameState.scores.black;
-
-            document.getElementById('lock-badge-white').className = `badge ${gameState.isLocked.white ? 'active' : ''}`;
-            document.getElementById('lock-badge-black').className = `badge ${gameState.isLocked.black ? 'active' : ''}`;
-
-            const rollBtn = document.getElementById('roll-btn');
-            if(gameState.turn) {
-                const arabName = gameState.turn === 'white' ? 'الأبيض' : 'الأسود';
-                document.getElementById('turn-indicator').innerText = `دور: ${arabName}`;
-                
-                if(gameState.gameMode === 'online' && gameState.turn !== gameState.myColor) {
-                    rollBtn.disabled = true;
-                    rollBtn.innerText = 'انتظر الخصم';
-                } else {
-                    rollBtn.disabled = gameState.hasRolled;
-                    rollBtn.innerText = gameState.hasRolled ? 'حرك قطعك' : 'إرمِ الزهر';
-                }
-            }
-
-            // عرض الزهر الحالي
-            const diceContainer = document.getElementById('main-dice-container');
-            diceContainer.innerHTML = '';
-            gameState.dice.forEach(d => {
-                const dDiv = document.createElement('div');
-                dDiv.className = 'die';
-                dDiv.innerText = d;
-                diceContainer.appendChild(dDiv);
-            });
-
-            // تفعيل حركة الذكاء الاصطناعي إذا كان دوره
-            if(gameState.gameMode === 'ai' && gameState.turn === 'black' && !gameState.hasRolled) {
-                setTimeout(aiPlayTurn, 1000);
-            }
+function drawTray(){
+    let tx=CW-FR-TRAY;
+    cx.fillStyle=CC.trayC;cx.fillRect(tx,FR,TRAY,CH-2*FR);
+    cx.fillStyle='rgba(40,20,8,0.9)';cx.fillRect(tx+2,FR+2,TRAY-4,CH-2*FR-4);
+    cx.strokeStyle='rgba(212,175,55,0.08)';cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(tx,CH/2);cx.lineTo(tx+TRAY,CH/2);cx.stroke();
+    if(G.off.w>0){
+        for(let j=0;j<Math.min(G.off.w,8);j++){
+            let cy=CH-FR-10-j*11;cx.fillStyle='#c8b898';cx.fillRect(tx+7,cy-4,TRAY-14,9);cx.strokeStyle='#a89878';cx.lineWidth=.5;cx.strokeRect(tx+7,cy-4,TRAY-14,9);
         }
-
-        function updateTray(elementId, color, count) {
-            const trayZone = document.getElementById(elementId);
-            trayZone.innerHTML = '';
-            const visible = Math.min(count, 6);
-            for(let i=0; i<visible; i++) {
-                const ch = document.createElement('div');
-                ch.className = `checker ${color}`;
-                if(i === visible-1 && count > 6) ch.innerText = count;
-                trayZone.appendChild(ch);
-            }
+        cx.fillStyle='#2a1209';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText(G.off.w,tx+TRAY/2,CH-FR-10-Math.min(G.off.w,8)*11-10);
+    }
+    if(G.off.b>0){
+        for(let j=0;j<Math.min(G.off.b,8);j++){
+            let cy=FR+10+j*11;cx.fillStyle='#151515';cx.fillRect(tx+7,cy-4,TRAY-14,9);cx.strokeStyle='#2a2a2a';cx.lineWidth=.5;cx.strokeRect(tx+7,cy-4,TRAY-14,9);
         }
+        cx.fillStyle='#c8b898';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText(G.off.b,tx+TRAY/2,FR+10+Math.min(G.off.b,8)*11+10);
+    }
+}
 
-        // فحص حالة القفل لحجر معين
-        function isPointLocked(pointIndex, color) {
-            if(color === 'white' && gameState.isLocked.white && pointIndex === 24) return true;
-            if(color === 'black' && gameState.isLocked.black && pointIndex === 1) return true;
-            return false;
+function drawDice(){
+    if(G.dice.length<2)return;
+    let mx=FR+6*PW+BAR/2,my=CH/2;
+    drawOneDie(mx-26,my-16,32,G.dice[0],!G.ml.includes(G.dice[0]));
+    drawOneDie(mx+4,my-16,32,G.dice[1],!G.ml.includes(G.dice[1]));
+    if(G.dice[0]!==G.dice[1]&&G.ml.length===2){
+        cx.fillStyle='rgba(100,200,240,0.6)';cx.font='bold 10px Cairo';cx.textAlign='center';
+        cx.fillText(G.dice[0]+'+'+G.dice[1]+'='+(G.dice[0]+G.dice[1]),mx,my+28);
+    }else if(G.dice[0]===G.dice[1]&&G.ml.length>0){
+        cx.fillStyle='#D4AF37';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText('×'+G.ml.length,mx,my+26);
+    }
+}
+
+function drawOneDie(x,y,sz,val,used){
+    cx.globalAlpha=used?0.2:1;
+    cx.fillStyle='#f5e6c8';cx.strokeStyle='#7a4a24';cx.lineWidth=2;
+    rRect(cx,x,y,sz,sz,4);cx.fill();cx.stroke();
+    cx.fillStyle='#2a1209';let c=x+sz/2,cy=y+sz/2,o=sz*.25,d=sz/9;
+    let dots={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};
+    for(let[dx,dy]of dots[val]){cx.beginPath();cx.arc(c+dx*o,cy+dy*o,d,0,Math.PI*2);cx.fill();}
+    cx.globalAlpha=1;
+}
+
+function rRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();}
+
+function drawHighlights(){
+    let wStart=23,bStart=0;
+    if(G.startLocked.w&&G.pts[wStart].n>0){
+        let{x,isTop}=ptVis(wStart);let cnt=Math.min(G.pts[wStart].n,5);
+        let cy=isTop?FR+CR+3+(cnt-1)*(CR*2-2):CH-FR-CR-3-(cnt-1)*(CR*2-2);
+        cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(196,30,58,0.45)';cx.lineWidth=3;cx.setLineDash([4,4]);cx.stroke();cx.setLineDash([]);
+        cx.fillStyle='rgba(196,30,58,0.55)';cx.font='10px FontAwesome';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('\uf023',x,cy-CR-10);
+    }
+    if(G.startLocked.b&&G.pts[bStart].n>0){
+        let{x,isTop}=ptVis(bStart);let cnt=Math.min(G.pts[bStart].n,5);
+        let cy=isTop?FR+CR+3+(cnt-1)*(CR*2-2):CH-FR-CR-3-(cnt-1)*(CR*2-2);
+        cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(196,30,58,0.45)';cx.lineWidth=3;cx.setLineDash([4,4]);cx.stroke();cx.setLineDash([]);
+        cx.fillStyle='rgba(196,30,58,0.55)';cx.font='10px FontAwesome';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('\uf023',x,cy-CR-10);
+    }
+    if(G.sel!==-1){
+        let{x,isTop}=ptVis(G.sel);let p=G.pts[G.sel];
+        if(p.n>0){
+            let cnt=Math.min(p.n,5);let gap=p.n>5?Math.min((CR*2-2),(PH-CR*2)/(p.n-1)):CR*2-2;
+            let j=cnt-1;let cy=isTop?FR+CR+3+j*gap:CH-FR-CR-3-j*gap;
+            cx.beginPath();cx.arc(x,cy,CR+5,0,Math.PI*2);cx.strokeStyle='#D4AF37';cx.lineWidth=3;cx.stroke();
+            cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(212,175,55,0.18)';cx.lineWidth=2;cx.stroke();
         }
-
-        // منطق النوافذ المنبثقة لتحديد من يبدأ اللعب (تصفية ذهنية خالية من المشاكل والـ bugs)
-        let modalRolls = { white: 0, black: 0 };
-        function showStartModal() {
-            modalRolls = { white: 0, black: 0 };
-            document.getElementById('modal-die-w').innerText = '-';
-            document.getElementById('modal-die-b').innerText = '-';
-            document.getElementById('modal-status-text').innerText = 'اضغط على زر الرمي لتحديد من سيبدأ.';
-            const btn = document.getElementById('modal-action-btn');
-            btn.innerText = 'ارمي الزهر';
-            btn.onclick = executeModalRoll;
-            document.getElementById('start-modal').style.display = 'flex';
+    }
+    for(let d of G.validDests){
+        if(d.to==='off'){let tx=CW-FR-TRAY;cx.fillStyle='rgba(100,255,100,0.12)';cx.fillRect(tx,FR,TRAY,CH-2*FR);}
+        else{
+            let{x,isTop}=ptVis(d.to);let cy=isTop?FR+PH/2:CH-FR-PH/2;let isComb=d.combined;
+            cx.beginPath();cx.arc(x,cy,CR+3,0,Math.PI*2);
+            cx.fillStyle=isComb?'rgba(100,200,240,0.25)':'rgba(100,255,100,0.2)';cx.fill();
+            cx.strokeStyle=isComb?'rgba(100,200,240,0.5)':'rgba(100,255,100,0.4)';cx.lineWidth=2;cx.stroke();
+            cx.fillStyle=isComb?'#8df':'#fff';cx.font='bold 12px Cairo';cx.textAlign='center';cx.textBaseline='middle';
+            cx.fillText(isComb?(d.die1+'+'+d.die2):d.die,x,cy);
         }
+    }
+}
 
-        function executeModalRoll() {
-            modalRolls.white = Math.floor(Math.random() * 6) + 1;
-            modalRolls.black = Math.floor(Math.random() * 6) + 1;
+function updateLockBadges(){
+    G.startLocked.w=G.pts[23].n>0&&!canMoveFromPoint('w',23);
+    G.startLocked.b=G.pts[0].n>0&&!canMoveFromPoint('b',0);
+    document.getElementById('wLock').classList.toggle('hidden',!G.startLocked.w);
+    document.getElementById('bLock').classList.toggle('hidden',!G.startLocked.b);
+}
 
-            document.getElementById('modal-die-w').innerText = modalRolls.white;
-            document.getElementById('modal-die-b').innerText = modalRolls.black;
+function updateUI(){
+    let my=!G.isOnline||G.turn===G.myColor;if(G.isAI&&G.turn==='b')my=false;
+    let isMove=G.phase==='move',isRoll=G.phase==='roll';
+    document.getElementById('rollBtn').disabled=!(isRoll&&my);
+    document.getElementById('endBtn').disabled=!(isMove&&my&&G.ml.length>0);
+    document.getElementById('undoBtn').disabled=!(G.moveStack.length>0&&my);
+    let wOn=0,bOn=0;for(let i=0;i<24;i++){if(G.pts[i].c==='w')wOn+=G.pts[i].n;if(G.pts[i].c==='b')bOn+=G.pts[i].n;}
+    document.getElementById('wInfo').textContent='على الرقعة:'+wOn+' | خارج:'+G.off.w;
+    document.getElementById('bInfo').textContent='على الرقعة:'+bOn+' | خارج:'+G.off.b;
+    document.getElementById('whiteTag').classList.toggle('active',G.turn==='w'&&G.phase!=='init');
+    document.getElementById('blackTag').classList.toggle('active',G.turn==='b'&&G.phase!=='init');
+    let msg='';
+    if(G.phase==='init')msg='هحدد مين يبدأ...';
+    else if(G.phase==='roll')msg=my?'ارمي الزهر':'استنى دورك...';
+    else if(G.phase==='move'){
+        if(!my){msg=G.isAI?'الكمبيوتر بيفكر...':'صاحبك بيلعب...';}
+        else{if(G.startLocked[G.turn])msg='ادخل أرض الخصم الأول!';else msg='اختار حجر - متبقي '+G.ml.length;}
+    }else if(G.phase==='over')msg='خلصت!';
+    document.getElementById('turnMsg').textContent=msg;
+}
 
-            const statusText = document.getElementById('modal-status-text');
-            const btn = document.getElementById('modal-action-btn');
+function canLand(c,i){if(i<0||i>23)return false;let p=G.pts[i];return!(p.n>0&&p.c!==c);}
+function canBearOff(c){
+    if(c==='w'){for(let i=6;i<24;i++)if(G.pts[i].c==='w'&&G.pts[i].n>0)return false;}
+    else{for(let i=0;i<18;i++)if(G.pts[i].c==='b'&&G.pts[i].n>0)return false;}
+    return true;
+}
+function noHigher(c,from){
+    if(c==='w'){for(let j=from+1;j<=5;j++)if(G.pts[j].c==='w'&&G.pts[j].n>0)return false;}
+    else{for(let j=from-1;j>=18;j--)if(G.pts[j].c==='b'&&G.pts[j].n>0)return false;}
+    return true;
+}
 
-            if(modalRolls.white > modalRolls.black) {
-                statusText.innerText = 'الأبيض أعلى! اللاعب الأبيض هو من سيبدأ اللعب.';
-                btn.innerText = 'يلا نبدأ الجيم';
-                gameState.turn = 'white';
-                btn.onclick = closeStartModal;
-            } else if(modalRolls.black > modalRolls.white) {
-                statusText.innerText = 'الأسود أعلى! اللاعب الأسود هو من سيبدأ اللعب.';
-                btn.innerText = 'يلا نبدأ الجيم';
-                gameState.turn = 'black';
-                btn.onclick = closeStartModal;
-            } else {
-                statusText.innerText = 'تعادل! يجب إعادة الرمي مجدداً.';
-                btn.innerText = 'ارمي تاني';
-                btn.onclick = executeModalRoll;
-            }
-            
-            if(gameState.gameMode === 'online') {
-                sendNetData({ type: 'modalRollResult', rolls: modalRolls, startTurn: gameState.turn });
-            }
+function getValidDests(from){
+    let ds=[],c=G.turn,seen=new Set();
+    if(!canMoveFromPoint(c,from))return ds;
+    for(let die of G.ml){
+        if(seen.has(die))continue;seen.add(die);
+        if(c==='w'){
+            let to=from-die;
+            if(to>=0&&canLand(c,to))ds.push({to,die,combined:false});
+            else if(to<0&&canBearOff(c)){let dist=from+1;if(die===dist)ds.push({to:'off',die,combined:false});else if(die>dist&&noHigher(c,from))ds.push({to:'off',die,combined:false});}
+        }else{
+            let to=from+die;
+            if(to<=23&&canLand(c,to))ds.push({to,die,combined:false});
+            else if(to>23&&canBearOff(c)){let dist=24-from;if(die===dist)ds.push({to:'off',die,combined:false});else if(die>dist&&noHigher(c,from))ds.push({to:'off',die,combined:false});}
         }
-
-        function closeStartModal() {
-            document.getElementById('start-modal').style.style = 'none'; // إخفاء المودال
-            document.getElementById('start-modal').style.setProperty('display', 'none', 'important');
-            initGame();
+    }
+    if(G.dice.length===2&&G.dice[0]!==G.dice[1]&&G.ml.length===2){
+        let combinedDie=G.dice[0]+G.dice[1];
+        if(c==='w'){
+            let to=from-combinedDie;
+            if(to>=0&&canLand(c,to)&&!ds.some(d=>d.to===to))ds.push({to,die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});
+            else if(to<0&&canBearOff(c)){let dist=from+1;if((combinedDie===dist||combinedDie>dist&&noHigher(c,from))&&!ds.some(d=>d.to==='off'))ds.push({to:'off',die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});}
+        }else{
+            let to=from+combinedDie;
+            if(to<=23&&canLand(c,to)&&!ds.some(d=>d.to===to))ds.push({to,die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});
+            else if(to>23&&canBearOff(c)){let dist=24-from;if((combinedDie===dist||combinedDie>dist&&noHigher(c,from))&&!ds.some(d=>d.to==='off'))ds.push({to:'off',die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});}
         }
+    }
+    return ds;
+}
 
-        // رمي الزهر العادي أثناء اللعبة
-        function rollDice() {
-            if(gameState.hasRolled || !gameState.turn) return;
-            
-            if(gameState.gameMode === 'online' && gameState.turn !== gameState.myColor) return;
+function hasAnyMove(){if(!G.ml.length)return false;for(let i=0;i<24;i++)if(G.pts[i].c===G.turn&&G.pts[i].n>0&&getValidDests(i).length>0)return true;return false;}
 
-            const d1 = Math.floor(Math.random() * 6) + 1;
-            const d2 = Math.floor(Math.random() * 6) + 1;
+function execMove(from,to,die,combined,die1,die2){
+    let c=G.turn;
+    G.moveStack.push({from,to,die,combined,combinedDie1:die1,combinedDie2:die2,off:{...G.off},pts:G.pts.map(p=>({...p})),ml:[...G.ml],startLocked:{...G.startLocked}});
+    G.pts[from].n--;if(!G.pts[from].n)G.pts[from].c=null;
+    if(to==='off')G.off[c]++;else{G.pts[to].n++;G.pts[to].c=c;}
+    if(combined){let i1=G.ml.indexOf(die1);if(i1!==-1)G.ml.splice(i1,1);let i2=G.ml.indexOf(die2);if(i2!==-1)G.ml.splice(i2,1);}
+    else{let di=G.ml.indexOf(die);if(di!==-1)G.ml.splice(di,1);}
+    G.sel=-1;G.validDests=[];
+    if(hasEnteredOpponentLand(c))G.startLocked[c]=false;
+    if(G.isOnline)sendMsg({type:'state',state:getState()});
+    render();
+    if(G.off[c]===15){G.phase='over';render();showGameOver(c);return true;}
+    if(!G.ml.length||!hasAnyMove()){if(G.ml.length)toast('مفيش حركات كمان');setTimeout(()=>endTurn(),500);}
+    return false;
+}
 
-            if(d1 === d2) {
-                gameState.dice = [d1, d1, d1, d1]; // نظام الدبل 4 حركات
-            } else {
-                gameState.dice = [d1, d2];
-            }
+function undoMove(){if(!G.moveStack.length)return;let s=G.moveStack.pop();G.off=s.off;G.pts=s.pts;G.ml=s.ml;G.startLocked=s.startLocked;G.sel=-1;G.validDests=[];if(G.isOnline)sendMsg({type:'state',state:getState()});render();}
 
-            gameState.hasRolled = true;
-            
-            if(gameState.gameMode === 'online') {
-                sendNetData({ type: 'gameDiceRolled', dice: gameState.dice, turn: gameState.turn });
-            }
+function endTurn(){G.turn=G.turn==='w'?'b':'w';G.dice=[];G.ml=[];G.phase='roll';G.sel=-1;G.validDests=[];G.moveStack=[];if(G.isOnline)sendMsg({type:'state',state:getState()});render();if(G.isAI&&G.turn==='b')setTimeout(aiTurn,800);}
 
-            // فحص إمكانية الحركة التلقائية لتفادي التجميد
-            if(!hasAnyValidMoves()) {
-                setTimeout(() => {
-                    alert('لا توجد حركات متاحة لك! ينتقل الدور تلقائياً.');
-                    switchTurn();
-                }, 1200);
-            }
+function forceEndTurn(){if(G.phase!=='move')return;if(hasAnyMove()){toast('عندك حركات متاحة!');return;}endTurn();}
 
-            updateUI();
-        }
+function handleRoll(){if(G.phase!=='roll')return;let d1=Math.floor(Math.random()*6)+1,d2=Math.floor(Math.random()*6)+1;G.dice=[d1,d2];G.ml=d1===d2?[d1,d1,d1,d1]:[d1,d2];G.phase='move';G.moveStack=[];if(G.isOnline)sendMsg({type:'roll',d1,d2});render();if(!hasAnyMove()){toast('مفيش حركات!');setTimeout(()=>endTurn(),1200);}}
 
-        // إدارة الأدوار والتحقق من القفل
-        function switchTurn() {
-            gameState.selectedPoint = null;
-            gameState.hasRolled = false;
-            gameState.dice = [];
-            gameState.turn = (gameState.turn === 'white') ? 'black' : 'white';
-            
-            // إلغاء تمييزات الإضاءة السابقة
-            clearHighlights();
-            updateUI();
-        }
+function aiTurn(){if(G.phase==='roll'){handleRoll();if(G.phase==='move')setTimeout(aiMakeMove,700);}}
+function aiMakeMove(){if(G.phase!=='move'||G.turn!=='b')return;if(!G.ml.length||!hasAnyMove()){endTurn();return;}let best=findBestMove();if(best){execMove(best.from,best.to,best.die,best.combined,best.die1,best.die2);if(G.phase==='move')setTimeout(aiMakeMove,600);}else endTurn();}
+function findBestMove(){let best=null,bestScore=-Infinity;for(let i=0;i<24;i++){if(G.pts[i].c!=='b'||G.pts[i].n<=0)continue;let dests=getValidDests(i);for(let d of dests){let s=scoreAIMove(i,d.to,d.die,d.combined);if(s>bestScore){bestScore=s;best={from:i,to:d.to,die:d.die,combined:d.combined||false,die1:d.die1||0,die2:d.die2||0};}}}return best;}
+function scoreAIMove(from,to,die,combined){
+    let s=0;if(to==='off')return 200;s+=(to-from)*3;if(to>=18)s+=40;if(G.pts[to].c==='b'&&G.pts[to].n>=1)s+=25;s+=(23-from)*0.5;if(combined)s+=15;if(G.startLocked.b&&to>=12)s+=60;
+    let oppNear=false;for(let j=Math.max(0,to-3);j<=Math.min(23,to+3);j++){if(G.pts[j].c==='w'&&G.pts[j].n>=2)oppNear=true;}if(!oppNear)s+=10;if(G.pts[from].n===1)s+=5;return s;
+}
 
-        // حساب الحركات المتاحة لكل نقطة (بما فيها الحركة المجمعة)
-        function getLegalMovesForPoint(pointIndex) {
-            const moves = [];
-            const color = gameState.board[pointIndex].color;
-            if(!color || color !== gameState.turn) return moves;
+function doInitRoll(){
+    let btn=document.getElementById('initRollBtn');
+    if(G.initStep===0){G.initRolls.w=Math.floor(Math.random()*6)+1;drawInitDie('initDieW',G.initRolls.w);G.initStep=1;btn.innerHTML='<i class="fas fa-dice"></i> ارمي للأسود';document.getElementById('initMsg').textContent='الأبيض: '+G.initRolls.w;if(G.isOnline)sendMsg({type:'initRoll',step:'w',val:G.initRolls.w});if(G.isAI)setTimeout(()=>doInitRoll(),800);}
+    else if(G.initStep===1){G.initRolls.b=Math.floor(Math.random()*6)+1;drawInitDie('initDieB',G.initRolls.b);if(G.isOnline)sendMsg({type:'initRoll',step:'b',val:G.initRolls.b});
+        if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}
+        else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}
+        else{document.getElementById('initMsg').textContent='تعادل! ارموا تاني';G.initStep=0;btn.innerHTML='<i class="fas fa-dice"></i> ارمي تاني';setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}
+        G.initStep=2;btn.innerHTML='<i class="fas fa-play"></i> يلا نبدأ';if(G.isAI)setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.turn==='b')setTimeout(aiTurn,600);},1200);
+    }else{document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.isAI&&G.turn==='b')setTimeout(aiTurn,600);}
+}
 
-            // تطبيق قاعدة القفل التامة: يمنع تحريك أي قطعة أخرى حتى تعبر قطعة واحدة البار على الأقل
-            if(color === 'white' && gameState.isLocked.white && pointIndex !== 24) return moves;
-            if(color === 'black' && gameState.isLocked.black && pointIndex !== 1) return moves;
+function drawInitDie(id,val){
+    let c=document.getElementById(id),x=c.getContext('2d');x.clearRect(0,0,50,50);
+    if(!val){x.fillStyle='rgba(255,255,255,0.05)';x.strokeStyle='rgba(255,255,255,0.1)';x.lineWidth=1;rRect(x,5,5,40,40,4);x.fill();x.stroke();return;}
+    x.fillStyle='#f5e6c8';x.strokeStyle='#7a4a24';x.lineWidth=2;rRect(x,5,5,40,40,4);x.fill();x.stroke();
+    x.fillStyle='#2a1209';let cx2=25,cy2=25,o=10,d=3.5;
+    let dots={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};
+    for(let[dx,dy]of dots[val]){x.beginPath();x.arc(cx2+dx*o,cy2+dy*o,d,0,Math.PI*2);x.fill();}
+}
 
-            const availableDice = [...gameState.dice];
-            if(availableDice.length === 0) return moves;
+cv.addEventListener('click',e=>handleInput(e.clientX,e.clientY));
+cv.addEventListener('touchstart',e=>{e.preventDefault();let t=e.touches[0];handleInput(t.clientX,t.clientY);},{passive:false});
 
-            // الاتجاهات: الأبيض يتناقص (24 -> 1)، الأسود يتزايد (1 -> 24)
-            const direction = (color === 'white') ? -1 : 1;
+function handleInput(clientX,clientY){
+    if(G.phase!=='move')return;if(G.isAI&&G.turn==='b')return;if(G.isOnline&&G.turn!==G.myColor)return;
+    let rect=cv.getBoundingClientRect(),sx=CW/rect.width,sy=CH/rect.height;
+    let mx=(clientX-rect.left)*sx,my=(clientY-rect.top)*sy;
+    let clicked=getClickedPt(mx,my);
+    if(G.sel!==-1&&clicked!==null){
+        let dest=G.validDests.find(d=>d.to===clicked);if(dest){execMove(G.sel,dest.to,dest.die,dest.combined,dest.die1,dest.die2);return;}
+        if(clicked==='off'){let dest=G.validDests.find(d=>d.to==='off');if(dest){execMove(G.sel,'off',dest.die,dest.combined,dest.die1,dest.die2);return;}}
+    }
+    if(typeof clicked==='number'&&G.pts[clicked].c===G.turn&&G.pts[clicked].n>0){
+        if(!canMoveFromPoint(G.turn,clicked)){toast('مينفعش تحرك من الصف الأول - ادخل أرض الخصم الأول!');return;}
+        G.sel=clicked;G.validDests=getValidDests(clicked);render();return;
+    }
+    G.sel=-1;G.validDests=[];render();
+}
 
-            // 1. حركات الزهر المنفصلة (العادية بالأخضر)
-            const uniqueDice = [...new Set(availableDice)];
-            uniqueDice.forEach(die => {
-                const target = pointIndex + (die * direction);
-                if(isValidTarget(target, color)) {
-                    moves.push({ target: target, diceUsed: [die], type: 'normal' });
-                }
-            });
+function getClickedPt(mx,my){let tx=CW-FR-TRAY;if(mx>=tx&&mx<=CW-FR&&my>=FR&&my<=CH-FR)return'off';for(let i=0;i<24;i++){let{x,isTop}=ptVis(i);if(mx<x-PW/2||mx>x+PW/2)continue;if(isTop&&my>=FR&&my<=FR+PH+30)return i;if(!isTop&&my>=CH-FR-PH-30&&my<=CH-FR)return i;}return null;}
 
-            // 2. الحركة المجمعة التراكمية (تظهر بالأزرق مميزة حسب الطلب)
-            if(availableDice.length >= 2 && !isDouble(availableDice)) {
-                const sum = availableDice[0] + availableDice[1];
-                const target = pointIndex + (sum * direction);
-                // يجب فحص أن الخطوات البينية ليست مغلقة بالكامل أو أن الهدف متاح وخالي من أحجار الخصم
-                if(isValidTarget(target, color)) {
-                    const mid1 = pointIndex + (availableDice[0] * direction);
-                    const mid2 = pointIndex + (availableDice[1] * direction);
-                    if(isValidTarget(mid1, color) || isValidTarget(mid2, color)) {
-                        moves.push({ target: target, diceUsed: [availableDice[0], availableDice[1]], type: 'combo' });
-                    }
-                }
-            }
+function startAI(){G.isAI=true;G.isOnline=false;G.myColor=null;document.getElementById('blackLabel').textContent='الكمبيوتر';initBoard();document.getElementById('menuScreen').classList.add('hidden');document.getElementById('gameScreen').classList.remove('hidden');render();showInitModal();}
+function startLocal(){G.isAI=false;G.isOnline=false;G.myColor=null;document.getElementById('blackLabel').textContent='الأسود';initBoard();document.getElementById('menuScreen').classList.add('hidden');document.getElementById('gameScreen').classList.remove('hidden');render();showInitModal();}
+function showInitModal(){G.initStep=0;G.initRolls={w:0,b:0};drawInitDie('initDieW',0);drawInitDie('initDieB',0);document.getElementById('initMsg').textContent='';document.getElementById('initRollBtn').innerHTML='<i class="fas fa-dice"></i> ارمي للأبيض';document.getElementById('initModal').classList.remove('hidden');}
 
-            // 3. منطق خروج الأحجار من الرقعة (Borne Off) في نهاية الجيم
-            if(canPlayerBearOff(color)) {
-                // فحص إذا كان الزهر يخرج القطعة تماماً خارج اللوحة
-                availableDice.forEach(die => {
-                    const target = pointIndex + (die * direction);
-                    if((color === 'white' && target <= 0) || (color === 'black' && target > 24)) {
-                        moves.push({ target: 'off', diceUsed: [die], type: 'normal' });
-                    }
-                });
-            }
+function genCode(){let c='';for(let i=0;i<6;i++)c+='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*31)];return c;}
+function showCreate(){G.roomCode=genCode();G.myColor='w';G.isAI=false;document.getElementById('blackLabel').textContent='صاحبك';document.getElementById('menuScreen').classList.add('hidden');document.getElementById('createScreen').classList.remove('hidden');document.getElementById('roomCodeDisplay').textContent=G.roomCode;try{G.peer=new Peer('tawla-'+G.roomCode,{debug:0});}catch(e){toast('خطأ');return;}G.peer.on('open',()=>{});G.peer.on('connection',c=>{G.conn=c;G.isOnline=true;setupConn();initBoard();document.getElementById('createScreen').classList.add('hidden');document.getElementById('gameScreen').classList.remove('hidden');render();toast('صاحبك دخل!');showInitModal();});G.peer.on('error',e=>toast('خطأ: '+e.type));}
+function showJoin(){G.isAI=false;document.getElementById('blackLabel').textContent='صاحبك';document.getElementById('menuScreen').classList.add('hidden');document.getElementById('joinScreen').classList.remove('hidden');document.getElementById('joinInput').value='';setTimeout(()=>document.getElementById('joinInput').focus(),200);}
+function doJoin(){let code=document.getElementById('joinInput').value.trim().toUpperCase();if(code.length<4){toast('اكتب الكود صح');return;}G.roomCode=code;G.myColor='b';toast('بتوصل...');try{G.peer=new Peer({debug:0});}catch(e){toast('خطأ');return;}G.peer.on('open',()=>{G.conn=G.peer.connect('tawla-'+code);G.conn.on('open',()=>{G.isOnline=true;setupConn();initBoard();document.getElementById('joinScreen').classList.add('hidden');document.getElementById('gameScreen').classList.remove('hidden');render();toast('اتصلت!');showInitModal();});G.conn.on('error',()=>toast('مقدرتش أتوصل'));});G.peer.on('error',e=>{if(e.type==='peer-unavailable')toast('الغرفة مش موجودة');else toast('خطأ: '+e.type);});}
 
-            return moves;
-        }
+function setupConn(){
+    G.conn.on('data',data=>{
+        if(data.type==='roll'){G.dice=[data.d1,data.d2];G.ml=data.d1===data.d2?[data.d1,data.d1,data.d1,data.d1]:[data.d1,data.d2];G.phase='move';G.sel=-1;G.validDests=[];G.moveStack=[];render();if(!hasAnyMove()){toast('مفيش حركات!');setTimeout(()=>endTurn(),1200);}
+        }else if(data.type==='state'){applyState(data.state);render();}
+        else if(data.type==='initRoll'){
+            if(data.step==='w'){G.initRolls.w=data.val;drawInitDie('initDieW',data.val);G.initStep=1;document.getElementById('initRollBtn').innerHTML='<i class="fas fa-dice"></i> ارمي للأسود';document.getElementById('initMsg').textContent='الأبيض: '+data.val;}
+            else if(data.step==='b'){G.initRolls.b=data.val;drawInitDie('initDieB',data.val);if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل!';G.initStep=0;setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}G.initStep=2;document.getElementById('initRollBtn').innerHTML='<i class="fas fa-play"></i> يلا نبدأ';}
+        }else if(data.type==='restart'){initBoard();render();showInitModal();toast('لعبة جديدة!');}
+    });
+    G.conn.on('close',()=>{toast('صاحبك فصل');G.isOnline=false;updateUI();});
+}
 
-        function isDouble(diceArr) {
-            return diceArr.length >= 2 && diceArr.every(v => v === diceArr[0]);
-        }
+function getState(){return{pts:G.pts.map(p=>({c:p.c,n:p.n})),off:{...G.off},turn:G.turn,dice:[...G.dice],ml:[...G.ml],phase:G.phase,startLocked:{...G.startLocked}};}
+function applyState(s){G.pts=s.pts;G.off=s.off;G.turn=s.turn;G.dice=s.dice;G.ml=s.ml;G.phase=s.phase;G.startLocked=s.startLocked||{w:true,b:true};G.sel=-1;G.validDests=[];G.moveStack=[];if(G.off[G.turn]===15){G.phase='over';showGameOver(G.turn);}}
+function sendMsg(d){if(G.conn&&G.conn.open)G.conn.send(d);}
 
-        // طاولة 31: مفيش أكل نهائياً. أي حجر واحد للخصم يمثل حماية كاملة للنقطة وممنوع النزول عليها
-        function isValidTarget(target, myColor) {
-            if(target < 1 || target > 24) return false;
-            const enemyColor = (myColor === 'white') ? 'black' : 'white';
-            const targetData = gameState.board[target];
-            
-            if(targetData.count > 0 && targetData.color === enemyColor) {
-                return false; // ممنوع، النقطة مشغولة ومحمية حتى لو بحجر واحد
-            }
-            return true;
-        }
+function backToMenu(){if(G.conn){try{G.conn.close();}catch(e){}G.conn=null;}if(G.peer){try{G.peer.destroy();}catch(e){}G.peer=null;}G.isOnline=false;G.isAI=false;document.querySelectorAll('.cafe-bg,.lobby,.game-wrap,.modal-bg').forEach(el=>el.classList.add('hidden'));document.getElementById('menuScreen').classList.remove('hidden');document.getElementById('menuScreen').style.display='';}
+function restartGame(){document.getElementById('gameOverModal').classList.add('hidden');initBoard();if(G.isOnline)sendMsg({type:'restart'});render();showInitModal();}
+function showGameOver(winner){let win=!G.isOnline||winner===G.myColor;if(G.isAI)win=winner==='w';document.getElementById('goTitle').textContent=win?'فزت!':'خسرت';document.getElementById('goMsg').textContent=win?'مبروك! كل أحجارك دخلت':'حاول تاني!';document.getElementById('gameOverModal').classList.remove('hidden');if(win)spawnConfetti();}
 
-        // هل يمكن البدء بإخراج الأحجار؟ (عندما تصل كل الأحجار للربع الأخير)
-        function canPlayerBearOff(color) {
-            // شرط إضافي: لا يمكن الخروج والقفل ما زال فعلاً
-            if(color === 'white' && gameState.isLocked.white) return false;
-            if(color === 'black' && gameState.isLocked.black) return false;
+function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+function spawnConfetti(){let cols=['#D4AF37','#f0d060','#c41e3a','#0f5132','#f5e6c8','#b87333'];for(let i=0;i<50;i++){let el=document.createElement('div');el.style.cssText=`position:fixed;width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;background:${cols[i%6]};left:${Math.random()*100}vw;top:-10px;border-radius:${Math.random()>.5?'50%':'2px'};z-index:300;pointer-events:none;animation:confettiFall ${2+Math.random()*2.5}s ease-in forwards;animation-delay:${Math.random()*1.5}s`;document.body.appendChild(el);setTimeout(()=>el.remove(),6000);}}
 
-            for(let i=1; i<=24; i++) {
-                const data = gameState.board[i];
-                if(data.color === color && data.count > 0) {
-                    if(color === 'white' && i > 6) return false; // يجب أن تكون كلها في النقاط 1-6
-                    if(color === 'black' && i < 19) return false; // يجب أن تكون كلها في النقاط 19-24
-                }
-            }
-            return true;
-        }
-
-        function hasAnyValidMoves() {
-            for(let i=1; i<=24; i++) {
-                if(gameState.board[i].color === gameState.turn) {
-                    if(getLegalMovesForPoint(i).length > 0) return true;
-                }
-            }
-            return false;
-        }
-
-        // التعامل مع نقرات المستخدم على النقاط للتحريك
-        function onPointClick(i) {
-            if(!gameState.hasRolled) return;
-            if(gameState.gameMode === 'online' && gameState.turn !== gameState.myColor) return;
-
-            // إذا نقر على نقطة بها إضاءة خيار حركة، نقوم بتنفيذ الحركة فوراً
-            const ptDOM = document.querySelector(`.point[data-index="${i}"]`);
-            if(ptDOM && (ptDOM.classList.contains('highlight-normal') || ptDOM.classList.contains('highlight-combo'))) {
-                executeMoveToTarget(i);
-                return;
-            }
-
-            // عدا ذلك نقوم بتحديد الحجر المختار وعرض مسارات حركته
-            clearHighlights();
-            const data = gameState.board[i];
-            if(!data || data.color !== gameState.turn || data.count === 0) {
-                gameState.selectedPoint = null;
-                updateUI();
-                return;
-            }
-
-            gameState.selectedPoint = i;
-            updateUI();
-
-            const legalMoves = getLegalMovesForPoint(i);
-            legalMoves.forEach(m => {
-                if(m.target === 'off') {
-                    // تمييز صينية الخروج لتسهيل نقرها
-                    const trayId = (gameState.turn === 'white') ? 'tray-white' : 'tray-black';
-                    document.getElementById(trayId).style.background = 'rgba(46, 204, 113, 0.4)';
-                    document.getElementById(trayId).onclick = () => executeMoveToTarget('off');
-                } else {
-                    const targetDOM = document.querySelector(`.point[data-index="${m.target}"]`);
-                    if(targetDOM) {
-                        if(m.type === 'combo') {
-                            targetDOM.classList.add('highlight-combo'); // لون أزرق مجمع
-                        } else {
-                            targetDOM.classList.add('highlight-normal'); // لون أخضر عادي
-                        }
-                    }
-                }
-            });
-        }
-
-        function clearHighlights() {
-            document.querySelectorAll('.point').forEach(p => {
-                p.classList.remove('highlight-normal', 'highlight-combo');
-            });
-            document.getElementById('tray-white').style.background = '';
-            document.getElementById('tray-white').onclick = null;
-            document.getElementById('tray-black').style.background = '';
-            document.getElementById('tray-black').onclick = null;
-        }
-
-        // تطبيق وتفعيل خطوة نقل الحجر الفعلي وإزالة الزهر المستهلك
-        function executeMoveToTarget(target) {
-            const start = gameState.selectedPoint;
-            if(!start) return;
-
-            const legalMoves = getLegalMovesForPoint(start);
-            const move = legalMoves.find(m => m.target === target);
-
-            if(!move) {
-                gameState.selectedPoint = null;
-                clearHighlights();
-                updateUI();
-                return;
-            }
-
-            // تعديل الرقعة وموقع الحجر
-            const color = gameState.turn;
-            gameState.board[start].count--;
-            if(gameState.board[start].count === 0) gameState.board[start].color = null;
-
-            if(target === 'off') {
-                gameState.borneOff[color]++;
-            } else {
-                if(gameState.board[target].count === 0) {
-                    gameState.board[target].color = color;
-                }
-                gameState.board[target].count++;
-            }
-
-            // فحص كسر قانون القفل (العبور وراء البار)
-            // البار يفصل بين النصفين: الأبيض يعبر البار إذا وصل للنقطة 12 أو أقل. الأسود يعبر إذا وصل لـ 13 أو أعلى.
-            if(color === 'white' && gameState.isLocked.white && start === 24 && target !== 'off' && target <= 12) {
-                gameState.isLocked.white = false;
-            }
-            if(color === 'black' && gameState.isLocked.black && start === 1 && target !== 'off' && target >= 13) {
-                gameState.isLocked.black = false;
-            }
-
-            // استهلاك واقتصاص النرد المستخدم من المصفوفة
-            move.diceUsed.forEach(d => {
-                const idx = gameState.dice.indexOf(d);
-                if(idx > -1) gameState.dice.splice(idx, 1);
-            });
-
-            if(gameState.gameMode === 'online') {
-                sendNetData({ type: 'gameMoveExecuted', start: start, target: target, diceUsed: move.diceUsed });
-            }
-
-            gameState.selectedPoint = null;
-            clearHighlights();
-
-            // التحقق من نهاية الجيم
-            if(gameState.borneOff[color] === 15) {
-                handleGameEnd(color);
-                return;
-            }
-
-            // نقل الدور إذا انتهت الحركات المتاحة بالزهر أو تعذر اللعب
-            if(gameState.dice.length === 0 || !hasAnyValidMoves()) {
-                switchTurn();
-            } else {
-                updateUI();
-            }
-        }
-
-        // إنهاء الجيم وحساب عدد نقاط أحجار الخصم المتبقية في الأرض للفورة
-        function handleGameEnd(winner) {
-            const loser = (winner === 'white') ? 'black' : 'white';
-            
-            // حساب الأحجار المتبقية للخصم في الأرض
-            let remainingCheckers = 15 - gameState.borneOff[loser];
-            gameState.scores[winner] += remainingCheckers;
-
-            const arabWinner = winner === 'white' ? 'الأبيض' : 'الأسود';
-            
-            const modal = document.getElementById('end-modal');
-            const title = document.getElementById('end-title');
-            const details = document.getElementById('end-details');
-            const actionBtn = document.getElementById('end-action-btn');
-
-            if(gameState.scores[winner] >= 31) {
-                // الفورة الكبرى والكونفيتي المبهج
-                title.innerText = `🏆 مبروك الفوز بالماتش! 🏆`;
-                details.innerText = `اللاعب ${arabWinner} وصل إلى النتيجة ${gameState.scores[winner]} نقطة وحقق الفورة الكبرى (31 نقطة) ضد الخصم بنجاح!`;
-                actionBtn.innerText = `ابدأ ماتش جديد`;
-                actionBtn.onclick = () => {
-                    gameState.scores = { white: 0, black: 0 };
-                    modal.style.display = 'none';
-                    showStartModal();
-                };
-                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-            } else {
-                // جيم عادي وبانتظار باقي الماتش
-                title.innerText = `انتهاء الجيم الحالي`;
-                details.innerText = `فاز اللاعب ${arabWinner} بهذا الجيم وحصل على (+${remainingCheckers}) نقاط بناءً على أحجار الخصم الباقية.\n\nالنتيجة الإجمالية الحالية:\nالأبيض: ${gameState.scores.white} / الأسود: ${gameState.scores.black}`;
-                actionBtn.innerText = `الجيم الجاي`;
-                actionBtn.onclick = () => {
-                    modal.style.display = 'none';
-                    initGame();
-                    // في الجيم القادم الخسران هو من يلعب أولاً أو نعيد القرعة تلقائياً
-                    switchTurn(); 
-                };
-            }
-            modal.style.display = 'flex';
-        }
-
-        function resetGameForNextRound() {
-            document.getElementById('end-modal').style.display = 'none';
-            initGame();
-        }
-
-        // ذكاء اصطناعي بسيط ومحايد لتشغيل نمط الـ AI ضد الكمبيوتر
-        function aiPlayTurn() {
-            if(gameState.turn !== 'black' || gameState.gameMode !== 'ai') return;
-
-            if(!gameState.hasRolled) {
-                rollDice();
-                setTimeout(aiPlayTurn, 800);
-                return;
-            }
-
-            // تجميع كل الحركات القانونية الممكنة للقطع السوداء حالياً
-            let allPossibleMoves = [];
-            for(let i=1; i<=24; i++) {
-                if(gameState.board[i].color === 'black') {
-                    const moves = getLegalMovesForPoint(i);
-                    moves.forEach(m => {
-                        allPossibleMoves.push({ start: i, target: m.target, diceUsed: m.diceUsed });
-                    });
-                }
-            }
-
-            if(allPossibleMoves.length > 0) {
-                // اختيار حركة عشوائية ذكية للتحرك
-                const choice = allPossibleMoves[Math.floor(Math.random() * allPossibleMoves.length)];
-                gameState.selectedPoint = choice.start;
-                
-                setTimeout(() => {
-                    executeMoveToTarget(choice.target);
-                    // تكرار العملية حتى تنفد حركات الزهر المتاحة للذكاء الاصطناعي
-                    setTimeout(aiPlayTurn, 600);
-                }, 600);
-            } else {
-                switchTurn();
-            }
-        }
-
-        // منطق تغيير أنماط اللعب والـ PeerJS للغرف الأونلاين (P2P)
-        function setMode(mode) {
-            gameState.gameMode = mode;
-            const status = document.getElementById('network-status');
-            if(mode === 'local') status.innerText = "النمط الحالي: نفس الجهاز";
-            if(mode === 'ai') status.innerText = "النمط الحالي: ضد الكمبيوتر";
-            showStartModal();
-        }
-
-        function startOnlineRoom() {
-            gameState.gameMode = 'online';
-            gameState.myColor = 'white'; // منشئ الغرفة هو دائماً الأبيض
-            const status = document.getElementById('network-status');
-            status.innerText = "جاري الاتصال بالسيرفر وإنشاء غرفتك...";
-
-            peer = new Peer();
-            peer.on('open', (id) => {
-                status.innerHTML = `تم إنشاء الغرفة! كود الغرفة الخاص بك هو: <b style="color:var(--gold); font-size:1.1rem;">${id}</b> <br> أرسله لصديقك لينضم إليك كلاعب أسود.`;
-            });
-
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupNetworkHandlers();
-                status.innerText = "متصل بالخصم الآن! ابدأ بالقرعة الآن.";
-                showStartModal();
-            });
-        }
-
-        function joinOnlineRoom() {
-            const code = document.getElementById('room-code-input').value.trim();
-            if(!code) { alert('برجاء إدخال كود غرفة صحيح أولاً!'); return; }
-
-            gameState.gameMode = 'online';
-            gameState.myColor = 'black'; // المنضم للغرفة هو الأسود دائماً
-            const status = document.getElementById('network-status');
-            status.innerText = "جاري الاتصال بالغرفة...";
-
-            peer = new Peer();
-            peer.on('open', () => {
-                conn = peer.connect(code);
-                setupNetworkHandlers();
-                conn.on('open', () => {
-                    status.innerText = "تم الانضمام للغرفة بنجاح! بانتظار القرعة من منشئ الغرفة.";
-                });
-            });
-        }
-
-        function setupNetworkHandlers() {
-            conn.on('data', (data) => {
-                if(data.type === 'modalRollResult') {
-                    document.getElementById('modal-die-w').innerText = data.rolls.white;
-                    document.getElementById('modal-die-b').innerText = data.rolls.black;
-                    gameState.turn = data.startTurn;
-                    const statusText = document.getElementById('modal-status-text');
-                    const btn = document.getElementById('modal-action-btn');
-                    
-                    const arabWinner = data.startTurn === 'white' ? 'الأبيض' : 'الأسود';
-                    statusText.innerText = `النتيجة من الطرف الآخر: ${arabWinner} هو من سيبدأ.`;
-                    btn.innerText = 'يلا نبدأ الجيم';
-                    btn.onclick = closeStartModal;
-                }
-                if(data.type === 'gameDiceRolled') {
-                    gameState.dice = data.dice;
-                    gameState.hasRolled = true;
-                    gameState.turn = data.turn;
-                    updateUI();
-                }
-                if(data.type === 'gameMoveExecuted') {
-                    gameState.selectedPoint = data.start;
-                    executeMoveToTarget(data.target);
-                }
-            });
-        }
-
-        function sendNetData(obj) {
-            if(conn && conn.open) {
-                conn.send(obj);
-            }
-        }
-
-        // تشغيل اللعبة وإظهار القرعة فور الفتح مباشرة تلقائياً
-        window.onload = () => {
-            showStartModal();
-        };
-    </script>
+createSteam();initBoard();
+</script>
 </body>
 </html>

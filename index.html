@@ -8,21 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root{--wood:#2a1209;--wood2:#5c2d12;--wood3:#7a4a24;--felt:#0f5132;--gold:#D4AF37;--gold2:#f0d060;--amber:#b87333;--cream:#f5e6c8;--locked:#c41e3a;--teal:#0d9488}
+:root{--wood:#2a1209;--wood2:#5c2d12;--wood3:#7a4a24;--felt:#0f5132;--gold:#D4AF37;--gold2:#f0d060;--amber:#b87333;--cream:#f5e6c8;--teal:#0d9488}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow-x:hidden;color:#fff}
-
 .cafe-bg{min-height:100vh;background:radial-gradient(ellipse at 50% 30%,rgba(180,120,40,.12),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(100,50,15,.08),transparent 50%),linear-gradient(#0c0603,#060301);position:relative;overflow:hidden}
 .cafe-bg::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 30L30 55L5 30Z' fill='none' stroke='rgba(212,175,55,0.02)' stroke-width='.5'/%3E%3Ccircle cx='30' cy='30' r='2' fill='rgba(212,175,55,0.015)'/%3E%3C/svg%3E");pointer-events:none}
-
 .steam{position:absolute;width:2px;background:linear-gradient(to top,rgba(200,170,120,.12),transparent);border-radius:50%;animation:steamRise 4s ease-in infinite;pointer-events:none}
 @keyframes steamRise{0%{opacity:0;transform:translateY(0) scaleX(1)}30%{opacity:.5}70%{opacity:.2;transform:translateY(-80px) scaleX(2)}100%{opacity:0;transform:translateY(-140px) scaleX(3)}}
-
 .cafe-logo{display:flex;flex-direction:column;align-items:center;gap:2px}
 .cafe-icon{font-size:44px;color:var(--amber);filter:drop-shadow(0 2px 10px rgba(184,115,51,.3))}
 .cafe-title{font-size:clamp(42px,10vw,70px);font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--amber),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
 .cafe-divider{width:140px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:6px 0}
-
 .btn{padding:12px 24px;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;position:relative;overflow:hidden}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);pointer-events:none}
 .btn-gold{background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--wood);box-shadow:0 4px 14px rgba(212,175,55,.2)}
@@ -34,9 +30,7 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 .btn-sm{padding:8px 16px;font-size:13px;border-radius:8px}
 .btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
 .menu-btns{display:flex;flex-direction:column;gap:10px;width:min(300px,85vw)}
-
 .signature{position:fixed;top:8px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(212,175,55,.22);letter-spacing:1.5px;font-weight:600;z-index:999;pointer-events:none;white-space:nowrap}
-
 .lobby{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
 .lobby-card{background:linear-gradient(135deg,rgba(50,25,8,.7),rgba(30,15,5,.85));border:1px solid rgba(212,175,55,.18);border-radius:14px;padding:24px 28px;text-align:center;max-width:380px;width:90%;backdrop-filter:blur(4px)}
 .lobby-card h3{color:var(--gold);font-size:18px;margin-bottom:10px}
@@ -46,7 +40,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 @keyframes spin{to{transform:rotate(360deg)}}
 .join-input{background:rgba(0,0,0,.5);border:2px solid rgba(212,175,55,.2);border-radius:10px;padding:10px 16px;color:#fff;font-family:'Cairo',sans-serif;font-size:22px;font-weight:700;text-align:center;letter-spacing:5px;width:100%;max-width:220px;outline:none}
 .join-input:focus{border-color:var(--gold)}
-
 .game-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:8px;position:relative}
 .game-header{display:flex;align-items:center;justify-content:space-between;width:min(820px,96vw);margin-bottom:4px;padding:0 4px}
 .player-tag{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;transition:all .3s}
@@ -58,14 +51,11 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 .player-tag.b .dot{background:linear-gradient(135deg,#444,#111);border:1px solid #555}
 .tag-score{font-size:13px;font-weight:900;color:var(--gold2);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:4px;}
 .tag-info{font-size:11px;opacity:.55}
-.lock-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(196,30,58,.2);color:#f88;border:1px solid rgba(196,30,58,.25);margin-right:4px}
 #boardCanvas{max-width:96vw;max-height:66vh;cursor:pointer;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 80px rgba(212,175,55,.04)}
 .game-footer{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;flex-wrap:wrap}
 .turn-msg{font-size:13px;font-weight:700;color:var(--gold);text-align:center;min-height:20px}
-
 .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(15,8,3,.95);color:#fff;padding:9px 24px;border-radius:9px;font-size:13px;font-weight:700;border:1px solid var(--gold);z-index:1000;transition:transform .4s ease;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
 .modal{background:linear-gradient(135deg,#120805,#1f0f06);border:2px solid var(--gold);border-radius:14px;padding:24px 28px;text-align:center;max-width:360px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .modal h2{font-size:22px;font-weight:900;color:var(--gold);margin-bottom:6px}
@@ -81,15 +71,11 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 </style>
 </head>
 <body>
-
 <div class="signature">Created by Saher</div>
-
-<!-- ===== القائمة ===== -->
 <div id="menuScreen" class="cafe-bg" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px">
 <div id="steamContainer"></div>
 <div class="lantern" style="top:10%;left:15%"></div>
 <div class="lantern" style="top:8%;right:18%"></div>
-<div class="lantern" style="top:25%;left:8%"></div>
 <div class="cafe-logo">
 <div class="cafe-icon"><i class="fas fa-dice"></i></div>
 <div class="cafe-title">طاولة 31</div>
@@ -102,8 +88,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 <button class="btn btn-outline" onclick="startLocal()"><i class="fas fa-users"></i> العب على نفس الجهاز</button>
 </div>
 </div>
-
-<!-- ===== إنشاء غرفة ===== -->
 <div id="createScreen" class="cafe-bg lobby hidden">
 <div class="lobby-card">
 <h3><i class="fas fa-wifi"></i> غرفتك جاهزة</h3>
@@ -115,8 +99,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 </div>
 <button class="btn btn-outline btn-sm" onclick="backToMenu()"><i class="fas fa-arrow-right"></i> رجوع</button>
 </div>
-
-<!-- ===== الانضمام ===== -->
 <div id="joinScreen" class="cafe-bg lobby hidden">
 <div class="lobby-card">
 <h3><i class="fas fa-sign-in-alt"></i> انضم لغرفة</h3>
@@ -129,13 +111,11 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 </div>
 <button class="btn btn-outline btn-sm" onclick="backToMenu()"><i class="fas fa-arrow-right"></i> رجوع</button>
 </div>
-
-<!-- ===== اللعبة ===== -->
 <div id="gameScreen" class="game-wrap hidden" style="background:radial-gradient(ellipse at 50% 50%,rgba(15,81,50,.06),transparent 60%),radial-gradient(ellipse at 30% 20%,rgba(100,60,15,.06),transparent 50%),#060301">
 <div class="game-header">
-<div class="player-tag b" id="blackTag"><div class="dot"></div><span id="blackLabel">الأسود</span> <span class="tag-score" id="bScoreEl">0</span><span class="tag-info" id="bInfo"></span><span class="lock-badge hidden" id="bLock"><i class="fas fa-lock"></i> مقفل</span></div>
+<div class="player-tag b" id="blackTag"><div class="dot"></div><span id="blackLabel">الأسود</span> <span class="tag-score" id="bScoreEl">0</span><span class="tag-info" id="bInfo"></span></div>
 <div class="turn-msg" id="turnMsg">ارمي الزهر</div>
-<div class="player-tag w" id="whiteTag"><span>الأبيض</span> <span class="tag-score" id="wScoreEl">0</span><div class="dot"></div><span class="tag-info" id="wInfo"></span><span class="lock-badge hidden" id="wLock"><i class="fas fa-lock"></i> مقفل</span></div>
+<div class="player-tag w" id="whiteTag"><span>الأبيض</span> <span class="tag-score" id="wScoreEl">0</span><div class="dot"></div><span class="tag-info" id="wInfo"></span></div>
 </div>
 <canvas id="boardCanvas" width="820" height="520"></canvas>
 <div class="game-footer">
@@ -144,8 +124,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 <button class="btn btn-outline btn-sm" id="endBtn" onclick="forceEndTurn()" disabled><i class="fas fa-forward"></i> خلص دوري</button>
 </div>
 </div>
-
-<!-- ===== تحديد من يبدأ ===== -->
 <div id="initModal" class="modal-bg hidden">
 <div class="modal">
 <h2>مين يبدأ؟</h2>
@@ -159,8 +137,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 <button class="btn btn-gold btn-sm" id="initRollBtn" onclick="doInitRoll()" style="width:auto;padding:8px 24px;margin-top:8px"><i class="fas fa-dice"></i> ارمي</button>
 </div>
 </div>
-
-<!-- ===== نهاية الجولة/الماتش ===== -->
 <div id="gameOverModal" class="modal-bg hidden">
 <div class="modal">
 <h2 id="goTitle">انتهت الجولة</h2>
@@ -171,291 +147,52 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 </div>
 </div>
 </div>
-
 <div id="toast" class="toast"></div>
-
 <script>
 const CW=820,CH=520,FR=14,BAR=46,TRAY=44;
 const PW=(CW-2*FR-BAR-TRAY)/12;
 const PH=195,CR=PW/2-3;
 const CC={fr:'#2a1209',fr2:'#5c2d12',fr3:'#7a4a24',felt:'#0f5132',t1:'#c9a06c',t2:'#7a2e28',barC:'#1f0e05',trayC:'#1f0e05'};
+let initTimeout=null;
+let G={pts:[],off:{w:0,b:0},turn:'w',dice:[],ml:[],phase:'init',sel:-1,validDests:[],moveStack:[],myColor:null,isOnline:false,isAI:false,peer:null,conn:null,roomCode:'',initStep:0,initRolls:{w:0,b:0},scores:{w:0,b:0},lockSteps:{w:0,b:0},unlocked:{w:false,b:false}};
 
-let initTimeout = null;
-
-let G = {
-    pts: [],
-    off: { w:0, b:0 },
-    turn: 'w',
-    dice: [],
-    ml: [],
-    phase: 'init',
-    sel: -1,
-    validDests: [],
-    moveStack: [],
-    myColor: null,
-    isOnline: false,
-    isAI: false,
-    peer: null,
-    conn: null,
-    roomCode: '',
-    initStep: 0,
-    initRolls: { w:0, b:0 },
-    startLocked: { w:true, b:true },
-    scores: { w: 0, b: 0 }
-};
-
-function createSteam(){
-    let c=document.getElementById('steamContainer');if(!c)return;
-    setInterval(()=>{
-        if(document.getElementById('menuScreen').classList.contains('hidden'))return;
-        let s=document.createElement('div');s.className='steam';
-        s.style.left=Math.random()*80+10+'%';s.style.bottom=Math.random()*20+'%';
-        s.style.height=20+Math.random()*30+'px';s.style.animationDuration=3+Math.random()*3+'s';
-        c.appendChild(s);setTimeout(()=>s.remove(),6000);
-    },400);
-}
-
-function initMatch(){
-    G.scores = { w:0, b:0 };
-    initRound();
-}
-
-function initRound(){
-    G.pts=Array.from({length:24},()=>({c:null,n:0}));
-    G.pts[23]={c:'w',n:15};G.pts[0]={c:'b',n:15};
-    G.off={w:0,b:0};G.dice=[];G.ml=[];G.phase='init';
-    G.sel=-1;G.validDests=[];G.moveStack=[];
-    G.initStep=0;G.initRolls={w:0,b:0};
-    G.startLocked={w:true,b:true};
-}
-
-function hasEnteredOpponentLand(c){
-    if(c==='w'){for(let i=0;i<=11;i++)if(G.pts[i].c==='w'&&G.pts[i].n>0)return true;}
-    else{for(let i=12;i<=23;i++)if(G.pts[i].c==='b'&&G.pts[i].n>0)return true;}
-    return false;
-}
-
-function canMoveFromPoint(c,from){
-    let startPt=c==='w'?23:0;
-    if(from!==startPt)return true;
-    if(hasEnteredOpponentLand(c)){G.startLocked[c]=false;return true;}
-    for(let i=0;i<24;i++){if(i===startPt)continue;if(G.pts[i].c===c&&G.pts[i].n>0)return false;}
-    return true;
-}
+function createSteam(){let c=document.getElementById('steamContainer');if(!c)return;setInterval(()=>{if(document.getElementById('menuScreen').classList.contains('hidden'))return;let s=document.createElement('div');s.className='steam';s.style.left=Math.random()*80+10+'%';s.style.bottom=Math.random()*20+'%';s.style.height=20+Math.random()*30+'px';s.style.animationDuration=3+Math.random()*3+'s';c.appendChild(s);setTimeout(()=>s.remove(),6000);},400);}
+function initMatch(){G.scores={w:0,b:0};initRound();}
+function initRound(){G.pts=Array.from({length:24},()=>({c:null,n:0}));G.pts[23]={c:'w',n:15};G.pts[0]={c:'b',n:15};G.off={w:0,b:0};G.dice=[];G.ml=[];G.phase='init';G.sel=-1;G.validDests=[];G.moveStack=[];G.initStep=0;G.initRolls={w:0,b:0};G.lockSteps={w:0,b:0};G.unlocked={w:false,b:false};}
 
 const cv=document.getElementById('boardCanvas');
 const cx=cv.getContext('2d');
+function ptVis(i){let isTop=i>=12,col=isTop?i-12:11-i;let x=col<6?FR+col*PW+PW/2:FR+6*PW+BAR+(col-6)*PW+PW/2;return{x,isTop,col};}
 
-function ptVis(i){
-    let isTop=i>=12,col=isTop?i-12:11-i;
-    let x=col<6?FR+col*PW+PW/2:FR+6*PW+BAR+(col-6)*PW+PW/2;
-    return{x,isTop,col};
-}
-
-function render(){
-    cx.clearRect(0,0,CW,CH);
-    drawBoard();drawTriangles();drawCheckers();drawTray();drawDice();drawHighlights();drawPointNums();
-    updateLockBadges();updateUI();
-}
-
-function drawBoard(){
-    cx.fillStyle=CC.fr;cx.fillRect(0,0,CW,CH);
-    cx.fillStyle=CC.fr2;cx.fillRect(3,3,CW-6,CH-6);
-    cx.fillStyle=CC.fr;cx.fillRect(6,6,CW-12,CH-12);
-    cx.fillStyle=CC.fr3;cx.fillRect(8,8,CW-16,CH-16);
-    cx.fillStyle=CC.fr;cx.fillRect(10,10,CW-20,CH-20);
-    cx.fillStyle=CC.felt;cx.fillRect(FR,FR,CW-2*FR-TRAY,CH-2*FR);
-    let lg=cx.createRadialGradient(CW/2-TRAY/2,CH/2,50,CW/2-TRAY/2,CH/2,350);
-    lg.addColorStop(0,'rgba(255,240,180,0.025)');lg.addColorStop(1,'transparent');
-    cx.fillStyle=lg;cx.fillRect(FR,FR,CW-2*FR-TRAY,CH-2*FR);
-    cx.fillStyle=CC.barC;cx.fillRect(FR+6*PW,FR,BAR,CH-2*FR);
-    cx.fillStyle='rgba(212,175,55,0.06)';cx.fillRect(FR+6*PW,FR,1,CH-2*FR);cx.fillRect(FR+6*PW+BAR-1,FR,1,CH-2*FR);
-    cx.strokeStyle='rgba(212,175,55,0.05)';cx.lineWidth=1;
-    cx.beginPath();cx.moveTo(FR,CH/2);cx.lineTo(FR+6*PW,CH/2);cx.stroke();
-    cx.beginPath();cx.moveTo(FR+6*PW+BAR,CH/2);cx.lineTo(CW-FR-TRAY,CH/2);cx.stroke();
-}
-
-function drawTriangles(){
-    for(let i=0;i<24;i++){
-        let{x,isTop,col}=ptVis(i);
-        cx.beginPath();
-        if(isTop){cx.moveTo(x-PW/2+2,FR);cx.lineTo(x+PW/2-2,FR);cx.lineTo(x,FR+PH);}
-        else{cx.moveTo(x-PW/2+2,CH-FR);cx.lineTo(x+PW/2-2,CH-FR);cx.lineTo(x,CH-FR-PH);}
-        cx.closePath();cx.fillStyle=col%2===0?CC.t1:CC.t2;cx.fill();
-    }
-}
-
-function drawPointNums(){
-    cx.font='9px Cairo';cx.textAlign='center';
-    for(let i=0;i<24;i++){
-        let{x,isTop}=ptVis(i);
-        cx.fillStyle='rgba(212,175,55,0.15)';
-        if(isTop)cx.fillText(i+1,x,FR+PH+14);
-        else cx.fillText(i+1,x,CH-FR-PH-8);
-    }
-}
-
-function drawChecker(px,py,color,rad){
-    let r=rad||CR;
-    cx.beginPath();cx.arc(px+1.5,py+2.5,r,0,Math.PI*2);cx.fillStyle='rgba(0,0,0,0.3)';cx.fill();
-    cx.beginPath();cx.arc(px,py,r,0,Math.PI*2);
-    let g=cx.createRadialGradient(px-r/3,py-r/3,0,px,py,r);
-    if(color==='w'){g.addColorStop(0,'#fffef5');g.addColorStop(1,'#c8b898');}
-    else{g.addColorStop(0,'#4a4a4a');g.addColorStop(1,'#0c0c0c');}
-    cx.fillStyle=g;cx.fill();
-    cx.strokeStyle=color==='w'?'#a89878':'#2a2a2a';cx.lineWidth=1.5;cx.stroke();
-    cx.beginPath();cx.arc(px,py,r*0.5,0,Math.PI*2);
-    cx.strokeStyle=color==='w'?'rgba(160,130,80,0.2)':'rgba(200,170,100,0.12)';cx.lineWidth=1;cx.stroke();
-    cx.beginPath();cx.arc(px-r*0.25,py-r*0.25,r*0.15,0,Math.PI*2);
-    cx.fillStyle=color==='w'?'rgba(255,255,255,0.35)':'rgba(255,255,255,0.06)';cx.fill();
-}
-
-function drawCheckers(){
-    for(let i=0;i<24;i++){
-        let p=G.pts[i];if(!p.n)continue;
-        let{x,isTop}=ptVis(i);
-        let cnt=Math.min(p.n,5);
-        let gap=p.n>5?Math.min((CR*2-2),(PH-CR*2)/(p.n-1)):CR*2-2;
-        for(let j=0;j<cnt;j++){
-            let cy=isTop?FR+CR+3+j*gap:CH-FR-CR-3-j*gap;
-            drawChecker(x,cy,p.c);
-        }
-        if(p.n>1){
-            let cy=isTop?FR+CR+3+(cnt-1)*gap:CH-FR-CR-3-(cnt-1)*gap;
-            cx.fillStyle=p.c==='w'?'rgba(50,25,0,0.85)':'rgba(255,210,130,0.9)';
-            cx.font='bold 13px Cairo';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(p.n,x,cy);
-        }
-    }
-}
-
-function drawTray(){
-    let tx=CW-FR-TRAY;
-    cx.fillStyle=CC.trayC;cx.fillRect(tx,FR,TRAY,CH-2*FR);
-    cx.fillStyle='rgba(40,20,8,0.9)';cx.fillRect(tx+2,FR+2,TRAY-4,CH-2*FR-4);
-    cx.strokeStyle='rgba(212,175,55,0.08)';cx.lineWidth=1;
-    cx.beginPath();cx.moveTo(tx,CH/2);cx.lineTo(tx+TRAY,CH/2);cx.stroke();
-    if(G.off.w>0){
-        for(let j=0;j<Math.min(G.off.w,8);j++){
-            let cy=CH-FR-10-j*11;cx.fillStyle='#c8b898';cx.fillRect(tx+7,cy-4,TRAY-14,9);cx.strokeStyle='#a89878';cx.lineWidth=.5;cx.strokeRect(tx+7,cy-4,TRAY-14,9);
-        }
-        cx.fillStyle='#2a1209';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText(G.off.w,tx+TRAY/2,CH-FR-10-Math.min(G.off.w,8)*11-10);
-    }
-    if(G.off.b>0){
-        for(let j=0;j<Math.min(G.off.b,8);j++){
-            let cy=FR+10+j*11;cx.fillStyle='#151515';cx.fillRect(tx+7,cy-4,TRAY-14,9);cx.strokeStyle='#2a2a2a';cx.lineWidth=.5;cx.strokeRect(tx+7,cy-4,TRAY-14,9);
-        }
-        cx.fillStyle='#c8b898';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText(G.off.b,tx+TRAY/2,FR+10+Math.min(G.off.b,8)*11+10);
-    }
-}
-
-function drawDice(){
-    if(G.dice.length<2)return;
-    let mx=FR+6*PW+BAR/2,my=CH/2;
-    drawOneDie(mx-26,my-16,32,G.dice[0],!G.ml.includes(G.dice[0]));
-    drawOneDie(mx+4,my-16,32,G.dice[1],!G.ml.includes(G.dice[1]));
-    if(G.dice[0]!==G.dice[1]&&G.ml.length===2){
-        cx.fillStyle='rgba(100,200,240,0.6)';cx.font='bold 10px Cairo';cx.textAlign='center';
-        cx.fillText(G.dice[0]+'+'+G.dice[1]+'='+(G.dice[0]+G.dice[1]),mx,my+28);
-    }else if(G.dice[0]===G.dice[1]&&G.ml.length>0){
-        cx.fillStyle='#D4AF37';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText('×'+G.ml.length,mx,my+26);
-    }
-}
-
-function drawOneDie(x,y,sz,val,used){
-    cx.globalAlpha=used?0.2:1;
-    cx.fillStyle='#f5e6c8';cx.strokeStyle='#7a4a24';cx.lineWidth=2;
-    rRect(cx,x,y,sz,sz,4);cx.fill();cx.stroke();
-    cx.fillStyle='#2a1209';let c=x+sz/2,cy=y+sz/2,o=sz*.25,d=sz/9;
-    let dots={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};
-    for(let[dx,dy]of dots[val]){cx.beginPath();cx.arc(c+dx*o,cy+dy*o,d,0,Math.PI*2);cx.fill();}
-    cx.globalAlpha=1;
-}
-
+function render(){cx.clearRect(0,0,CW,CH);drawBoard();drawTriangles();drawCheckers();drawTray();drawDice();drawHighlights();drawPointNums();updateUI();}
+function drawBoard(){cx.fillStyle=CC.fr;cx.fillRect(0,0,CW,CH);cx.fillStyle=CC.fr2;cx.fillRect(3,3,CW-6,CH-6);cx.fillStyle=CC.fr;cx.fillRect(6,6,CW-12,CH-12);cx.fillStyle=CC.fr3;cx.fillRect(8,8,CW-16,CH-16);cx.fillStyle=CC.fr;cx.fillRect(10,10,CW-20,CH-20);cx.fillStyle=CC.felt;cx.fillRect(FR,FR,CW-2*FR-TRAY,CH-2*FR);let lg=cx.createRadialGradient(CW/2-TRAY/2,CH/2,50,CW/2-TRAY/2,CH/2,350);lg.addColorStop(0,'rgba(255,240,180,0.025)');lg.addColorStop(1,'transparent');cx.fillStyle=lg;cx.fillRect(FR,FR,CW-2*FR-TRAY,CH-2*FR);cx.fillStyle=CC.barC;cx.fillRect(FR+6*PW,FR,BAR,CH-2*FR);cx.fillStyle='rgba(212,175,55,0.06)';cx.fillRect(FR+6*PW,FR,1,CH-2*FR);cx.fillRect(FR+6*PW+BAR-1,FR,1,CH-2*FR);cx.strokeStyle='rgba(212,175,55,0.05)';cx.lineWidth=1;cx.beginPath();cx.moveTo(FR,CH/2);cx.lineTo(FR+6*PW,CH/2);cx.stroke();cx.beginPath();cx.moveTo(FR+6*PW+BAR,CH/2);cx.lineTo(CW-FR-TRAY,CH/2);cx.stroke();}
+function drawTriangles(){for(let i=0;i<24;i++){let{x,isTop,col}=ptVis(i);cx.beginPath();if(isTop){cx.moveTo(x-PW/2+2,FR);cx.lineTo(x+PW/2-2,FR);cx.lineTo(x,FR+PH);}else{cx.moveTo(x-PW/2+2,CH-FR);cx.lineTo(x+PW/2-2,CH-FR);cx.lineTo(x,CH-FR-PH);}cx.closePath();cx.fillStyle=col%2===0?CC.t1:CC.t2;cx.fill();}}
+function drawPointNums(){cx.font='9px Cairo';cx.textAlign='center';for(let i=0;i<24;i++){let{x,isTop}=ptVis(i);cx.fillStyle='rgba(212,175,55,0.15)';if(isTop)cx.fillText(i+1,x,FR+PH+14);else cx.fillText(i+1,x,CH-FR-PH-8);}}
+function drawChecker(px,py,color,rad){let r=rad||CR;cx.beginPath();cx.arc(px+1.5,py+2.5,r,0,Math.PI*2);cx.fillStyle='rgba(0,0,0,0.3)';cx.fill();cx.beginPath();cx.arc(px,py,r,0,Math.PI*2);let g=cx.createRadialGradient(px-r/3,py-r/3,0,px,py,r);if(color==='w'){g.addColorStop(0,'#fffef5');g.addColorStop(1,'#c8b898');}else{g.addColorStop(0,'#4a4a4a');g.addColorStop(1,'#0c0c0c');}cx.fillStyle=g;cx.fill();cx.strokeStyle=color==='w'?'#a89878':'#2a2a2a';cx.lineWidth=1.5;cx.stroke();cx.beginPath();cx.arc(px,py,r*0.5,0,Math.PI*2);cx.strokeStyle=color==='w'?'rgba(160,130,80,0.2)':'rgba(200,170,100,0.12)';cx.lineWidth=1;cx.stroke();cx.beginPath();cx.arc(px-r*0.25,py-r*0.25,r*0.15,0,Math.PI*2);cx.fillStyle=color==='w'?'rgba(255,255,255,0.35)':'rgba(255,255,255,0.06)';cx.fill();}
+function drawCheckers(){for(let i=0;i<24;i++){let p=G.pts[i];if(!p.n)continue;let{x,isTop}=ptVis(i);let cnt=Math.min(p.n,5);let gap=p.n>5?Math.min((CR*2-2),(PH-CR*2)/(p.n-1)):CR*2-2;for(let j=0;j<cnt;j++){let cy=isTop?FR+CR+3+j*gap:CH-FR-CR-3-j*gap;drawChecker(x,cy,p.c);}if(p.n>1){let cy=isTop?FR+CR+3+(cnt-1)*gap:CH-FR-CR-3-(cnt-1)*gap;cx.fillStyle=p.c==='w'?'rgba(50,25,0,0.85)':'rgba(255,210,130,0.9)';cx.font='bold 13px Cairo';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(p.n,x,cy);}}}
+function drawTray(){let tx=CW-FR-TRAY;cx.fillStyle=CC.trayC;cx.fillRect(tx,FR,TRAY,CH-2*FR);cx.fillStyle='rgba(40,20,8,0.9)';cx.fillRect(tx+2,FR+2,TRAY-4,CH-2*FR-4);cx.strokeStyle='rgba(212,175,55,0.08)';cx.lineWidth=1;cx.beginPath();cx.moveTo(tx,CH/2);cx.lineTo(tx+TRAY,CH/2);cx.stroke();if(G.off.w>0){for(let j=0;j<Math.min(G.off.w,8);j++){let cy=CH-FR-10-j*11;cx.fillStyle='#c8b898';cx.fillRect(tx+7,cy-4,TRAY-14,9);cx.strokeStyle='#a89878';cx.lineWidth=.5;cx.strokeRect(tx+7,cy-4,TRAY-14,9);}cx.fillStyle='#2a1209';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText(G.off.w,tx+TRAY/2,CH-FR-10-Math.min(G.off.w,8)*11-10);}if(G.off.b>0){for(let j=0;j<Math.min(G.off.b,8);j++){let cy=FR+10+j*11;cx.fillStyle='#151515';cx.fillRect(tx+7,cy-4,TRAY-14,9);cx.strokeStyle='#2a2a2a';cx.lineWidth=.5;cx.strokeRect(tx+7,cy-4,TRAY-14,9);}cx.fillStyle='#c8b898';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText(G.off.b,tx+TRAY/2,FR+10+Math.min(G.off.b,8)*11+10);}}
+function drawDice(){if(G.dice.length<2)return;let mx=FR+6*PW+BAR/2,my=CH/2;drawOneDie(mx-26,my-16,32,G.dice[0],!G.ml.includes(G.dice[0]));drawOneDie(mx+4,my-16,32,G.dice[1],!G.ml.includes(G.dice[1]));if(G.dice[0]!==G.dice[1]&&G.ml.length===2){cx.fillStyle='rgba(100,200,240,0.6)';cx.font='bold 10px Cairo';cx.textAlign='center';cx.fillText(G.dice[0]+'+'+G.dice[1]+'='+(G.dice[0]+G.dice[1]),mx,my+28);}else if(G.dice[0]===G.dice[1]&&G.ml.length>0){cx.fillStyle='#D4AF37';cx.font='bold 12px Cairo';cx.textAlign='center';cx.fillText('×'+G.ml.length,mx,my+26);}}
+function drawOneDie(x,y,sz,val,used){cx.globalAlpha=used?0.2:1;cx.fillStyle='#f5e6c8';cx.strokeStyle='#7a4a24';cx.lineWidth=2;rRect(cx,x,y,sz,sz,4);cx.fill();cx.stroke();cx.fillStyle='#2a1209';let c=x+sz/2,cy=y+sz/2,o=sz*.25,d=sz/9;let dots={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};for(let[dx,dy]of dots[val]){cx.beginPath();cx.arc(c+dx*o,cy+dy*o,d,0,Math.PI*2);cx.fill();}cx.globalAlpha=1;}
 function rRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();}
+function drawHighlights(){if(G.sel!==-1){let{x,isTop}=ptVis(G.sel);let p=G.pts[G.sel];if(p.n>0){let cnt=Math.min(p.n,5);let gap=p.n>5?Math.min((CR*2-2),(PH-CR*2)/(p.n-1)):CR*2-2;let j=cnt-1;let cy=isTop?FR+CR+3+j*gap:CH-FR-CR-3-j*gap;cx.beginPath();cx.arc(x,cy,CR+5,0,Math.PI*2);cx.strokeStyle='#D4AF37';cx.lineWidth=3;cx.stroke();cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(212,175,55,0.18)';cx.lineWidth=2;cx.stroke();}}for(let d of G.validDests){if(d.to==='off'){let tx=CW-FR-TRAY;cx.fillStyle='rgba(100,255,100,0.12)';cx.fillRect(tx,FR,TRAY,CH-2*FR);}else{let{x,isTop}=ptVis(d.to);let cy=isTop?FR+PH/2:CH-FR-PH/2;let isComb=d.combined;cx.beginPath();cx.arc(x,cy,CR+3,0,Math.PI*2);cx.fillStyle=isComb?'rgba(100,200,240,0.25)':'rgba(100,255,100,0.2)';cx.fill();cx.strokeStyle=isComb?'rgba(100,200,240,0.5)':'rgba(100,255,100,0.4)';cx.lineWidth=2;cx.stroke();cx.fillStyle=isComb?'#8df':'#fff';cx.font='bold 12px Cairo';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(isComb?(d.die1+'+'+d.die2):d.die,x,cy);}}}
 
-function drawHighlights(){
-    let wStart=23,bStart=0;
-    if(G.startLocked.w&&G.pts[wStart].n>0){
-        let{x,isTop}=ptVis(wStart);let cnt=Math.min(G.pts[wStart].n,5);
-        let cy=isTop?FR+CR+3+(cnt-1)*(CR*2-2):CH-FR-CR-3-(cnt-1)*(CR*2-2);
-        cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(196,30,58,0.45)';cx.lineWidth=3;cx.setLineDash([4,4]);cx.stroke();cx.setLineDash([]);
-        cx.fillStyle='rgba(196,30,58,0.55)';cx.font='10px FontAwesome';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('\uf023',x,cy-CR-10);
-    }
-    if(G.startLocked.b&&G.pts[bStart].n>0){
-        let{x,isTop}=ptVis(bStart);let cnt=Math.min(G.pts[bStart].n,5);
-        let cy=isTop?FR+CR+3+(cnt-1)*(CR*2-2):CH-FR-CR-3-(cnt-1)*(CR*2-2);
-        cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(196,30,58,0.45)';cx.lineWidth=3;cx.setLineDash([4,4]);cx.stroke();cx.setLineDash([]);
-        cx.fillStyle='rgba(196,30,58,0.55)';cx.font='10px FontAwesome';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('\uf023',x,cy-CR-10);
-    }
-    if(G.sel!==-1){
-        let{x,isTop}=ptVis(G.sel);let p=G.pts[G.sel];
-        if(p.n>0){
-            let cnt=Math.min(p.n,5);let gap=p.n>5?Math.min((CR*2-2),(PH-CR*2)/(p.n-1)):CR*2-2;
-            let j=cnt-1;let cy=isTop?FR+CR+3+j*gap:CH-FR-CR-3-j*gap;
-            cx.beginPath();cx.arc(x,cy,CR+5,0,Math.PI*2);cx.strokeStyle='#D4AF37';cx.lineWidth=3;cx.stroke();
-            cx.beginPath();cx.arc(x,cy,CR+8,0,Math.PI*2);cx.strokeStyle='rgba(212,175,55,0.18)';cx.lineWidth=2;cx.stroke();
-        }
-    }
-    for(let d of G.validDests){
-        if(d.to==='off'){let tx=CW-FR-TRAY;cx.fillStyle='rgba(100,255,100,0.12)';cx.fillRect(tx,FR,TRAY,CH-2*FR);}
-        else{
-            let{x,isTop}=ptVis(d.to);let cy=isTop?FR+PH/2:CH-FR-PH/2;let isComb=d.combined;
-            cx.beginPath();cx.arc(x,cy,CR+3,0,Math.PI*2);
-            cx.fillStyle=isComb?'rgba(100,200,240,0.25)':'rgba(100,255,100,0.2)';cx.fill();
-            cx.strokeStyle=isComb?'rgba(100,200,240,0.5)':'rgba(100,255,100,0.4)';cx.lineWidth=2;cx.stroke();
-            cx.fillStyle=isComb?'#8df':'#fff';cx.font='bold 12px Cairo';cx.textAlign='center';cx.textBaseline='middle';
-            cx.fillText(isComb?(d.die1+'+'+d.die2):d.die,x,cy);
-        }
-    }
-}
+function updateUI(){let my=!G.isOnline||G.turn===G.myColor;if(G.isAI&&G.turn==='b')my=false;let isMove=G.phase==='move',isRoll=G.phase==='roll';document.getElementById('rollBtn').disabled=!(isRoll&&my);document.getElementById('endBtn').disabled=!(isMove&&my&&G.ml.length>0);document.getElementById('undoBtn').disabled=!(G.moveStack.length>0&&my&&isMove);document.getElementById('wInfo').textContent='خارج:'+G.off.w;document.getElementById('bInfo').textContent='خارج:'+G.off.b;document.getElementById('wScoreEl').textContent=G.scores.w+'/31';document.getElementById('bScoreEl').textContent=G.scores.b+'/31';document.getElementById('whiteTag').classList.toggle('active',G.turn==='w'&&G.phase!=='init');document.getElementById('blackTag').classList.toggle('active',G.turn==='b'&&G.phase!=='init');let msg='';if(G.phase==='init')msg='هحدد مين يبدأ...';else if(G.phase==='roll')msg=my?'ارمي الزهر':'استنى دورك...';else if(G.phase==='move'){if(!my){msg=G.isAI?'الكمبيوتر بيفكر...':'صاحبك بيلعب...';}else msg='اختار حجر - متبقي '+G.ml.length;}else if(G.phase==='ending')msg=my?'بيخلص دورك...':(G.isAI?'الكمبيوتر بيلعب...':'صاحبك بيلعب...');else if(G.phase==='over')msg='خلصت!';let lockMsg='';if(!G.unlocked[G.turn]&&G.phase==='move')lockMsg=' | خطوة '+G.lockSteps[G.turn]+'/17';document.getElementById('turnMsg').textContent=msg+lockMsg;}
 
-function updateLockBadges(){
-    G.startLocked.w=G.pts[23].n>0&&!canMoveFromPoint('w',23);
-    G.startLocked.b=G.pts[0].n>0&&!canMoveFromPoint('b',0);
-    document.getElementById('wLock').classList.toggle('hidden',!G.startLocked.w);
-    document.getElementById('bLock').classList.toggle('hidden',!G.startLocked.b);
-}
-
-function updateUI(){
-    let my=!G.isOnline||G.turn===G.myColor;if(G.isAI&&G.turn==='b')my=false;
-    let isMove=G.phase==='move',isRoll=G.phase==='roll';
-    document.getElementById('rollBtn').disabled=!(isRoll&&my);
-    document.getElementById('endBtn').disabled=!(isMove&&my&&G.ml.length>0);
-    document.getElementById('undoBtn').disabled=!(G.moveStack.length>0&&my&&isMove);
-    document.getElementById('wInfo').textContent='خارج:'+G.off.w;
-    document.getElementById('bInfo').textContent='خارج:'+G.off.b;
-    document.getElementById('wScoreEl').textContent=G.scores.w+'/31';
-    document.getElementById('bScoreEl').textContent=G.scores.b+'/31';
-    document.getElementById('whiteTag').classList.toggle('active',G.turn==='w'&&G.phase!=='init');
-    document.getElementById('blackTag').classList.toggle('active',G.turn==='b'&&G.phase!=='init');
-    let msg='';
-    if(G.phase==='init')msg='هحدد مين يبدأ...';
-    else if(G.phase==='roll')msg=my?'ارمي الزهر':'استنى دورك...';
-    else if(G.phase==='move'){
-        if(!my){msg=G.isAI?'الكمبيوتر بيفكر...':'صاحبك بيلعب...';}
-        else{if(G.startLocked[G.turn])msg='ادخل أرض الخصم الأول!';else msg='اختار حجر - متبقي '+G.ml.length;}
-    }else if(G.phase==='ending'){
-        msg = my ? 'بيخلص دورك...' : (G.isAI ? 'الكمبيوتر بيلعب...' : 'صاحبك بيلعب...');
-    }else if(G.phase==='over')msg='خلصت!';
-    document.getElementById('turnMsg').textContent=msg;
-}
-
-function canLand(c,i){if(i<0||i>23)return false;let p=G.pts[i];return!(p.n>0&&p.c!==c);}
-function canBearOff(c){
-    if(c==='w'){for(let i=6;i<24;i++)if(G.pts[i].c==='w'&&G.pts[i].n>0)return false;}
-    else{for(let i=0;i<18;i++)if(G.pts[i].c==='b'&&G.pts[i].n>0)return false;}
-    return true;
-}
-function noHigher(c,from){
-    if(c==='w'){for(let j=from+1;j<=5;j++)if(G.pts[j].c==='w'&&G.pts[j].n>0)return false;}
-    else{for(let j=from-1;j>=18;j--)if(G.pts[j].c==='b'&&G.pts[j].n>0)return false;}
-    return true;
-}
+function canBearOff(c){if(c==='w'){for(let i=6;i<24;i++)if(G.pts[i].c==='w'&&G.pts[i].n>0)return false;}else{for(let i=0;i<18;i++)if(G.pts[i].c==='b'&&G.pts[i].n>0)return false;}return true;}
+function noHigher(c,from){if(c==='w'){for(let j=from+1;j<=5;j++)if(G.pts[j].c==='w'&&G.pts[j].n>0)return false;}else{for(let j=from-1;j>=18;j--)if(G.pts[j].c==='b'&&G.pts[j].n>0)return false;}return true;}
+function canLand(c,i){if(i<0||i>23)return false;let p=G.pts[i];if(p.n>0&&p.c!==c)return false;return true;}
 
 function getValidDests(from){
     let ds=[],c=G.turn,seen=new Set();
-    if(!canMoveFromPoint(c,from))return ds;
+    let homePt=c==='w'?23:0;
     
+    // قانون الـ 17: لازم تمشي بأول حجر لحد ما يعدى 17 خطوة
+    if(!G.unlocked[c]){
+        let hasBoardCheckers=false;
+        for(let i=0;i<24;i++){if(i===homePt)continue;if(G.pts[i].c===c&&G.pts[i].n>0)hasBoardCheckers=true;}
+        if(hasBoardCheckers&&from===homePt)return ds;
+    }
+
     for(let die of G.ml){
         if(seen.has(die))continue;seen.add(die);
         if(c==='w'){
@@ -468,29 +205,16 @@ function getValidDests(from){
             else if(to>23&&canBearOff(c)){let dist=24-from;if(die===dist)ds.push({to:'off',die,combined:false});else if(die>dist&&noHigher(c,from))ds.push({to:'off',die,combined:false});}
         }
     }
-    
     if(G.dice.length===2&&G.dice[0]!==G.dice[1]&&G.ml.length===2){
         let combinedDie=G.dice[0]+G.dice[1];
         if(c==='w'){
             let to=from-combinedDie;
-            if(to>=0&&canLand(c,to)){
-                let mid1=from-G.dice[0]; let mid2=from-G.dice[1];
-                let canPass1=mid1>=0&&canLand(c,mid1); let canPass2=mid2>=0&&canLand(c,mid2);
-                if((canPass1||canPass2)&&!ds.some(d=>d.to===to))ds.push({to,die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});
-            } else if(to<0&&canBearOff(c)){
-                let dist=from+1;
-                if((combinedDie===dist||combinedDie>dist&&noHigher(c,from))&&!ds.some(d=>d.to==='off'))ds.push({to:'off',die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});
-            }
+            if(to>=0&&canLand(c,to)){let mid1=from-G.dice[0];let mid2=from-G.dice[1];let canPass1=mid1>=0&&canLand(c,mid1);let canPass2=mid2>=0&&canLand(c,mid2);if((canPass1||canPass2)&&!ds.some(d=>d.to===to))ds.push({to,die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});}
+            else if(to<0&&canBearOff(c)){let dist=from+1;if((combinedDie===dist||combinedDie>dist&&noHigher(c,from))&&!ds.some(d=>d.to==='off'))ds.push({to:'off',die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});}
         }else{
             let to=from+combinedDie;
-            if(to<=23&&canLand(c,to)){
-                let mid1=from+G.dice[0]; let mid2=from+G.dice[1];
-                let canPass1=mid1<=23&&canLand(c,mid1); let canPass2=mid2<=23&&canLand(c,mid2);
-                if((canPass1||canPass2)&&!ds.some(d=>d.to===to))ds.push({to,die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});
-            } else if(to>23&&canBearOff(c)){
-                let dist=24-from;
-                if((combinedDie===dist||combinedDie>dist&&noHigher(c,from))&&!ds.some(d=>d.to==='off'))ds.push({to:'off',die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});
-            }
+            if(to<=23&&canLand(c,to)){let mid1=from+G.dice[0];let mid2=from+G.dice[1];let canPass1=mid1<=23&&canLand(c,mid1);let canPass2=mid2<=23&&canLand(c,mid2);if((canPass1||canPass2)&&!ds.some(d=>d.to===to))ds.push({to,die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});}
+            else if(to>23&&canBearOff(c)){let dist=24-from;if((combinedDie===dist||combinedDie>dist&&noHigher(c,from))&&!ds.some(d=>d.to==='off'))ds.push({to:'off',die:combinedDie,combined:true,die1:G.dice[0],die2:G.dice[1]});}
         }
     }
     return ds;
@@ -500,143 +224,53 @@ function hasAnyMove(){if(!G.ml.length)return false;for(let i=0;i<24;i++)if(G.pts
 
 function execMove(from,to,die,combined,die1,die2){
     let c=G.turn;
-    G.moveStack.push({from,to,die,combined,combinedDie1:die1,combinedDie2:die2,off:{...G.off},pts:G.pts.map(p=>({...p})),ml:[...G.ml],startLocked:{...G.startLocked}});
     
+    // فحص قانون السلسلة (6 قفلات)
+    let tempPts=G.pts.map(p=>({c:p.c,n:p.n}));
+    tempPts[from].n--;if(!tempPts[from].n)tempPts[from].c=null;
+    if(to!=='off'){tempPts[to].n++;tempPts[to].c=c;}
+    let opp=c==='w'?'b':'w';let consecutive=0;let isIllegalPrime=false;
+    for(let i=0;i<24;i++){if(tempPts[i].c===c&&tempPts[i].n>0){consecutive++;if(consecutive>=6){let pStart=i-5;let pEnd=i;let oppHasPassed=false;for(let j=0;j<24;j++){if(tempPts[j].c===opp&&tempPts[j].n>0){if(c==='w'&&j<=pEnd)oppHasPassed=true;if(c==='b'&&j>=pStart)oppHasPassed=true;}}if(G.off[opp]>0)oppHasPassed=true;if(!oppHasPassed){isIllegalPrime=true;break;}}}else{consecutive=0;}}
+    if(isIllegalPrime){toast('مينفعش تقفل 6 خانات وتحبس خصمك كله!');return false;}
+
+    G.moveStack.push({from,to,die,combined,combinedDie1:die1,combinedDie2:die2,off:{...G.off},pts:G.pts.map(p=>({...p})),ml:[...G.ml],lockSteps:{...G.lockSteps},unlocked:{...G.unlocked}});
     G.pts[from].n--;if(!G.pts[from].n)G.pts[from].c=null;
-    
-    if(to!=='off'){
-        let opp=c==='w'?'b':'w';
-        if(G.pts[to].c===opp&&G.pts[to].n===1){
-            let startPt=opp==='w'?23:0;
-            G.pts[startPt].n++;
-            G.pts[startPt].c=opp;
-            G.pts[to].n=0;
-            G.pts[to].c=null;
-            toast('ضربة! حجر راح يبدأ من جديد');
-        }
-        G.pts[to].n++;
-        G.pts[to].c=c;
-    } else {
-        G.off[c]++;
-    }
+    if(to!=='off'){G.pts[to].n++;G.pts[to].c=c;}else{G.off[c]++;}
     
     if(combined){let i1=G.ml.indexOf(die1);if(i1!==-1)G.ml.splice(i1,1);let i2=G.ml.indexOf(die2);if(i2!==-1)G.ml.splice(i2,1);}
     else{let di=G.ml.indexOf(die);if(di!==-1)G.ml.splice(di,1);}
-    
     G.sel=-1;G.validDests=[];
-    if(hasEnteredOpponentLand(c))G.startLocked[c]=false;
-    
+
+    // تحديث خطوات الـ 17 وفك اللعب
+    if(!G.unlocked[c]){G.lockSteps[c]+=die;if(G.lockSteps[c]>=17){G.unlocked[c]=true;toast('فك اللعب! الحجر عدى 17 خطوة');}}
+
     if(G.off[c]===15){
         G.phase='over';
-        let opp=c==='w'?'b':'w';
-        let oppOnBoard=15-G.off[opp];
-        let roundScore=oppOnBoard;
-        
-        G.scores[c]+=roundScore;
-        
-        if(G.isOnline)sendMsg({type:'state',state:getState()});
-        render();
-        showRoundOver(c,roundScore);
-        return true;
+        let roundScore=G.off[opp]>0?1:2;
+        G.scores[c]+=roundScore;if(G.isOnline)sendMsg({type:'state',state:getState()});render();showRoundOver(c,roundScore);return true;
     }
-    
-    if(G.isOnline)sendMsg({type:'state',state:getState()});
-    render();
-    
-    if(!G.ml.length||!hasAnyMove()){
-        if(G.ml.length)toast('مفيش حركات كمان');
-        G.phase='ending'; 
-        setTimeout(()=>endTurn(),800);
-    }
+    if(G.isOnline)sendMsg({type:'state',state:getState()});render();
+    if(!G.ml.length||!hasAnyMove()){if(G.ml.length)toast('مفيش حركات كمان');G.phase='ending';setTimeout(()=>endTurn(),800);}
     return false;
 }
 
-function undoMove(){if(!G.moveStack.length)return;let s=G.moveStack.pop();G.off=s.off;G.pts=s.pts;G.ml=s.ml;G.startLocked=s.startLocked;G.sel=-1;G.validDests=[];if(G.isOnline)sendMsg({type:'state',state:getState()});render();}
-
+function undoMove(){if(!G.moveStack.length)return;let s=G.moveStack.pop();G.off=s.off;G.pts=s.pts;G.ml=s.ml;G.lockSteps=s.lockSteps;G.unlocked=s.unlocked;G.sel=-1;G.validDests=[];if(G.isOnline)sendMsg({type:'state',state:getState()});render();}
 function endTurn(){G.turn=G.turn==='w'?'b':'w';G.dice=[];G.ml=[];G.phase='roll';G.sel=-1;G.validDests=[];G.moveStack=[];if(G.isOnline)sendMsg({type:'state',state:getState()});render();if(G.isAI&&G.turn==='b')setTimeout(aiTurn,800);}
-
 function forceEndTurn(){if(G.phase!=='move')return;if(hasAnyMove()){toast('عندك حركات متاحة!');return;}endTurn();}
-
 function handleRoll(){if(G.phase!=='roll')return;let d1=Math.floor(Math.random()*6)+1,d2=Math.floor(Math.random()*6)+1;G.dice=[d1,d2];G.ml=d1===d2?[d1,d1,d1,d1]:[d1,d2];G.phase='move';G.moveStack=[];if(G.isOnline)sendMsg({type:'roll',d1,d2});render();if(!hasAnyMove()){toast('مفيش حركات!');G.phase='ending';setTimeout(()=>endTurn(),1200);}}
 
 function aiTurn(){if(G.phase==='roll'){handleRoll();if(G.phase==='move')setTimeout(aiMakeMove,700);}}
 function aiMakeMove(){if(G.phase!=='move'||G.turn!=='b')return;if(!G.ml.length||!hasAnyMove()){endTurn();return;}let best=findBestMove();if(best){execMove(best.from,best.to,best.die,best.combined,best.die1,best.die2);if(G.phase==='move')setTimeout(aiMakeMove,600);}else endTurn();}
+function findBestMove(){let best=null,bestScore=-Infinity;for(let i=0;i<24;i++){if(G.pts[i].c!=='b'||G.pts[i].n<=0)continue;let dests=getValidDests(i);for(let d of dests){let s=scoreAIMove(i,d.to,d.die,d.combined);if(s>bestScore){bestScore=s;best={from:i,to:d.to,die:d.die,combined:d.combined||false,die1:d.die1||0,die2:d.die2||0};}}}return best;}
+function scoreAIMove(from,to,die,combined){let s=0;if(to==='off')return 200;s+=(to-from)*3;if(to>=18)s+=40;if(G.pts[to].c==='b'&&G.pts[to].n>=1)s+=25;s+=(23-from)*0.5;if(combined)s+=15;let oppNear=false;for(let j=Math.max(0,to-3);j<=Math.min(23,to+3);j++){if(G.pts[j].c==='w'&&G.pts[j].n>=2)oppNear=true;}if(!oppNear)s+=10;if(G.pts[from].n===1)s+=5;return s;}
 
-function findBestMove(){
-    let best=null,bestScore=-Infinity;
-    for(let i=0;i<24;i++){
-        if(G.pts[i].c!=='b'||G.pts[i].n<=0)continue;
-        let dests=getValidDests(i);
-        for(let d of dests){
-            let s=scoreAIMove(i,d.to,d.die,d.combined);
-            if(s>bestScore){bestScore=s;best={from:i,to:d.to,die:d.die,combined:d.combined||false,die1:d.die1||0,die2:d.die2||0};}
-        }
-    }
-    return best;
-}
+function doInitRoll(){let btn=document.getElementById('initRollBtn');if(G.initStep===0){G.initRolls.w=Math.floor(Math.random()*6)+1;drawInitDie('initDieW',G.initRolls.w);G.initStep=1;btn.innerHTML='<i class="fas fa-dice"></i> ارمي للأسود';document.getElementById('initMsg').textContent='الأبيض: '+G.initRolls.w;if(G.isOnline)sendMsg({type:'initRoll',step:'w',val:G.initRolls.w});if(G.isAI)setTimeout(()=>doInitRoll(),800);}else if(G.initStep===1){G.initRolls.b=Math.floor(Math.random()*6)+1;drawInitDie('initDieB',G.initRolls.b);if(G.isOnline)sendMsg({type:'initRoll',step:'b',val:G.initRolls.b});if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل! ارموا تاني';G.initStep=0;btn.innerHTML='<i class="fas fa-dice"></i> ارمي تاني';setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}G.initStep=2;btn.innerHTML='<i class="fas fa-play"></i> يلا نبدأ';if(G.isAI){if(initTimeout)clearTimeout(initTimeout);initTimeout=setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.turn==='b')setTimeout(aiTurn,600);},1200);}}else{if(initTimeout)clearTimeout(initTimeout);document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.isAI&&G.turn==='b')setTimeout(aiTurn,600);}}
 
-function scoreAIMove(from,to,die,combined){
-    let s=0;
-    if(to==='off')return 200;
-    let opp='w';
-    if(G.pts[to].c===opp&&G.pts[to].n===1)s+=80;
-    s+=(to-from)*3;
-    if(to>=18)s+=40;
-    if(G.pts[to].c==='b'&&G.pts[to].n>=1)s+=25;
-    s+=(23-from)*0.5;
-    if(combined)s+=15;
-    if(G.startLocked.b&&to>=12)s+=60;
-    let oppNear=false;for(let j=Math.max(0,to-3);j<=Math.min(23,to+3);j++){if(G.pts[j].c==='w'&&G.pts[j].n>=2)oppNear=true;}if(!oppNear)s+=10;
-    if(G.pts[from].n===1)s+=5;
-    return s;
-}
-
-function doInitRoll(){
-    let btn=document.getElementById('initRollBtn');
-    if(G.initStep===0){G.initRolls.w=Math.floor(Math.random()*6)+1;drawInitDie('initDieW',G.initRolls.w);G.initStep=1;btn.innerHTML='<i class="fas fa-dice"></i> ارمي للأسود';document.getElementById('initMsg').textContent='الأبيض: '+G.initRolls.w;if(G.isOnline)sendMsg({type:'initRoll',step:'w',val:G.initRolls.w});if(G.isAI)setTimeout(()=>doInitRoll(),800);}
-    else if(G.initStep===1){G.initRolls.b=Math.floor(Math.random()*6)+1;drawInitDie('initDieB',G.initRolls.b);if(G.isOnline)sendMsg({type:'initRoll',step:'b',val:G.initRolls.b});
-        if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}
-        else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}
-        else{document.getElementById('initMsg').textContent='تعادل! ارموا تاني';G.initStep=0;btn.innerHTML='<i class="fas fa-dice"></i> ارمي تاني';setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}
-        G.initStep=2;btn.innerHTML='<i class="fas fa-play"></i> يلا نبدأ';
-        if(G.isAI){
-            if(initTimeout) clearTimeout(initTimeout);
-            initTimeout=setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.turn==='b')setTimeout(aiTurn,600);},1200);
-        }
-    }else{
-        if(initTimeout) clearTimeout(initTimeout);
-        document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.isAI&&G.turn==='b')setTimeout(aiTurn,600);
-    }
-}
-
-function drawInitDie(id,val){
-    let c=document.getElementById(id),x=c.getContext('2d');x.clearRect(0,0,50,50);
-    if(!val){x.fillStyle='rgba(255,255,255,0.05)';x.strokeStyle='rgba(255,255,255,0.1)';x.lineWidth=1;rRect(x,5,5,40,40,4);x.fill();x.stroke();return;}
-    x.fillStyle='#f5e6c8';x.strokeStyle='#7a4a24';x.lineWidth=2;rRect(x,5,5,40,40,4);x.fill();x.stroke();
-    x.fillStyle='#2a1209';let cx2=25,cy2=25,o=10,d=3.5;
-    let dots={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};
-    for(let[dx,dy]of dots[val]){x.beginPath();x.arc(cx2+dx*o,cy2+dy*o,d,0,Math.PI*2);x.fill();}
-}
+function drawInitDie(id,val){let c=document.getElementById(id),x=c.getContext('2d');x.clearRect(0,0,50,50);if(!val){x.fillStyle='rgba(255,255,255,0.05)';x.strokeStyle='rgba(255,255,255,0.1)';x.lineWidth=1;rRect(x,5,5,40,40,4);x.fill();x.stroke();return;}x.fillStyle='#f5e6c8';x.strokeStyle='#7a4a24';x.lineWidth=2;rRect(x,5,5,40,40,4);x.fill();x.stroke();x.fillStyle='#2a1209';let cx2=25,cy2=25,o=10,d=3.5;let dots={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};for(let[dx,dy]of dots[val]){x.beginPath();x.arc(cx2+dx*o,cy2+dy*o,d,0,Math.PI*2);x.fill();}}
 
 cv.addEventListener('click',e=>handleInput(e.clientX,e.clientY));
 cv.addEventListener('touchstart',e=>{e.preventDefault();let t=e.touches[0];handleInput(t.clientX,t.clientY);},{passive:false});
-
-function handleInput(clientX,clientY){
-    if(G.phase!=='move')return;if(G.isAI&&G.turn==='b')return;if(G.isOnline&&G.turn!==G.myColor)return;
-    let rect=cv.getBoundingClientRect(),sx=CW/rect.width,sy=CH/rect.height;
-    let mx=(clientX-rect.left)*sx,my=(clientY-rect.top)*sy;
-    let clicked=getClickedPt(mx,my);
-    if(G.sel!==-1&&clicked!==null){
-        let dest=G.validDests.find(d=>d.to===clicked);if(dest){execMove(G.sel,dest.to,dest.die,dest.combined,dest.die1,dest.die2);return;}
-        if(clicked==='off'){let dest=G.validDests.find(d=>d.to==='off');if(dest){execMove(G.sel,'off',dest.die,dest.combined,dest.die1,dest.die2);return;}}
-    }
-    if(typeof clicked==='number'&&G.pts[clicked].c===G.turn&&G.pts[clicked].n>0){
-        if(!canMoveFromPoint(G.turn,clicked)){toast('مينفعش تحرك من الصف الأول - ادخل أرض الخصم الأول!');return;}
-        G.sel=clicked;G.validDests=getValidDests(clicked);render();return;
-    }
-    G.sel=-1;G.validDests=[];render();
-}
-
+function handleInput(clientX,clientY){if(G.phase!=='move')return;if(G.isAI&&G.turn==='b')return;if(G.isOnline&&G.turn!==G.myColor)return;let rect=cv.getBoundingClientRect(),sx=CW/rect.width,sy=CH/rect.height;let mx=(clientX-rect.left)*sx,my=(clientY-rect.top)*sy;let clicked=getClickedPt(mx,my);if(G.sel!==-1&&clicked!==null){let dest=G.validDests.find(d=>d.to===clicked);if(dest){execMove(G.sel,dest.to,dest.die,dest.combined,dest.die1,dest.die2);return;}if(clicked==='off'){let dest=G.validDests.find(d=>d.to==='off');if(dest){execMove(G.sel,'off',dest.die,dest.combined,dest.die1,dest.die2);return;}}}if(typeof clicked==='number'&&G.pts[clicked].c===G.turn&&G.pts[clicked].n>0){G.sel=clicked;G.validDests=getValidDests(clicked);render();return;}G.sel=-1;G.validDests=[];render();}
 function getClickedPt(mx,my){let tx=CW-FR-TRAY;if(mx>=tx&&mx<=CW-FR&&my>=FR&&my<=CH-FR)return'off';for(let i=0;i<24;i++){let{x,isTop}=ptVis(i);if(mx<x-PW/2||mx>x+PW/2)continue;if(isTop&&my>=FR&&my<=FR+PH+30)return i;if(!isTop&&my>=CH-FR-PH-30&&my<=CH-FR)return i;}return null;}
 
 function startAI(){G.isAI=true;G.isOnline=false;G.myColor=null;document.getElementById('blackLabel').textContent='الكمبيوتر';initMatch();document.getElementById('menuScreen').classList.add('hidden');document.getElementById('gameScreen').classList.remove('hidden');render();showInitModal();}
@@ -648,78 +282,16 @@ function showCreate(){G.roomCode=genCode();G.myColor='w';G.isAI=false;document.g
 function showJoin(){G.isAI=false;document.getElementById('blackLabel').textContent='صاحبك';document.getElementById('menuScreen').classList.add('hidden');document.getElementById('joinScreen').classList.remove('hidden');document.getElementById('joinInput').value='';setTimeout(()=>document.getElementById('joinInput').focus(),200);}
 function doJoin(){let code=document.getElementById('joinInput').value.trim().toUpperCase();if(code.length<4){toast('اكتب الكود صح');return;}G.roomCode=code;G.myColor='b';toast('بتوصل...');try{G.peer=new Peer({debug:0});}catch(e){toast('خطأ');return;}G.peer.on('open',()=>{G.conn=G.peer.connect('tawla-'+code);G.conn.on('open',()=>{G.isOnline=true;setupConn();initMatch();document.getElementById('joinScreen').classList.add('hidden');document.getElementById('gameScreen').classList.remove('hidden');render();toast('اتصلت!');showInitModal();});G.conn.on('error',()=>toast('مقدرتش أتوصل'));});G.peer.on('error',e=>{if(e.type==='peer-unavailable')toast('الغرفة مش موجودة');else toast('خطأ: '+e.type);});}
 
-function setupConn(){
-    G.conn.on('data',data=>{
-        if(data.type==='roll'){G.dice=[data.d1,data.d2];G.ml=data.d1===data.d2?[data.d1,data.d1,data.d1,data.d1]:[data.d1,data.d2];G.phase='move';G.sel=-1;G.validDests=[];G.moveStack=[];render();if(!hasAnyMove()){toast('مفيش حركات!');setTimeout(()=>endTurn(),1200);}
-        }else if(data.type==='state'){applyState(data.state);render();}
-        else if(data.type==='initRoll'){
-            if(data.step==='w'){G.initRolls.w=data.val;drawInitDie('initDieW',data.val);G.initStep=1;document.getElementById('initRollBtn').innerHTML='<i class="fas fa-dice"></i> ارمي للأسود';document.getElementById('initMsg').textContent='الأبيض: '+data.val;}
-            else if(data.step==='b'){G.initRolls.b=data.val;drawInitDie('initDieB',data.val);if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل!';G.initStep=0;setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}G.initStep=2;document.getElementById('initRollBtn').innerHTML='<i class="fas fa-play"></i> يلا نبدأ';}
-        }else if(data.type==='restart'){
-            if(data.matchOver) G.scores = data.scores || {w:0, b:0};
-            initRound(); 
-            render();showInitModal();toast('لعبة جديدة!');
-        }
-    });
-    
-    G.conn.on('close', () => {
-        toast('صاحبك فصل، هتكمل ضد الكمبيوتر');
-        G.isOnline = false;
-        G.isAI = true;
-        document.getElementById('blackLabel').textContent = 'الكمبيوتر';
-        updateUI();
-        if(G.turn === 'b' && G.phase === 'roll') setTimeout(aiTurn, 800);
-    });
-}
+function setupConn(){G.conn.on('data',data=>{if(data.type==='roll'){G.dice=[data.d1,data.d2];G.ml=data.d1===data.d2?[data.d1,data.d1,data.d1,data.d1]:[data.d1,data.d2];G.phase='move';G.sel=-1;G.validDests=[];G.moveStack=[];render();if(!hasAnyMove()){toast('مفيش حركات!');setTimeout(()=>endTurn(),1200);}}else if(data.type==='state'){applyState(data.state);render();}else if(data.type==='initRoll'){if(data.step==='w'){G.initRolls.w=data.val;drawInitDie('initDieW',data.val);G.initStep=1;document.getElementById('initRollBtn').innerHTML='<i class="fas fa-dice"></i> ارمي للأسود';document.getElementById('initMsg').textContent='الأبيض: '+data.val;}else if(data.step==='b'){G.initRolls.b=data.val;drawInitDie('initDieB',data.val);if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل!';G.initStep=0;setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}G.initStep=2;document.getElementById('initRollBtn').innerHTML='<i class="fas fa-play"></i> يلا نبدأ';}}else if(data.type==='restart'){if(data.matchOver)G.scores=data.scores||{w:0,b:0};initRound();render();showInitModal();toast('لعبة جديدة!');}});G.conn.on('close',()=>{toast('صاحبك فصل، هتكمل ضد الكمبيوتر');G.isOnline=false;G.isAI=true;document.getElementById('blackLabel').textContent='الكمبيوتر';updateUI();if(G.turn==='b'&&G.phase==='roll')setTimeout(aiTurn,800);});}
 
-function getState(){return{pts:G.pts.map(p=>({c:p.c,n:p.n})),off:{...G.off},turn:G.turn,dice:[...G.dice],ml:[...G.ml],phase:G.phase,startLocked:{...G.startLocked},scores:{...G.scores}};}
-function applyState(s){
-    G.pts=s.pts;G.off=s.off;G.turn=s.turn;G.dice=s.dice;G.ml=s.ml;G.phase=s.phase;G.startLocked=s.startLocked||{w:true,b:true};
-    if(s.scores)G.scores=s.scores;
-    G.sel=-1;G.validDests=[];G.moveStack=[];
-    if(G.phase==='over'){
-        let winner = G.off.w === 15 ? 'w' : 'b';
-        let opp=winner==='w'?'b':'w';
-        let oppOnBoard=15-G.off[opp];
-        showRoundOver(winner,oppOnBoard);
-    }
-}
+function getState(){return{pts:G.pts.map(p=>({c:p.c,n:p.n})),off:{...G.off},turn:G.turn,dice:[...G.dice],ml:[...G.ml],phase:G.phase,scores:{...G.scores},lockSteps:{...G.lockSteps},unlocked:{...G.unlocked}};}
+function applyState(s){G.pts=s.pts;G.off=s.off;G.turn=s.turn;G.dice=s.dice;G.ml=s.ml;G.phase=s.phase;if(s.scores)G.scores=s.scores;if(s.lockSteps)G.lockSteps=s.lockSteps;if(s.unlocked)G.unlocked=s.unlocked;G.sel=-1;G.validDests=[];G.moveStack=[];if(G.phase==='over'){let winner=G.off.w===15?'w':'b';let opp=winner==='w'?'b':'w';let oppOnBoard=15-G.off[opp];showRoundOver(winner,oppOnBoard);}}
 function sendMsg(d){if(G.conn&&G.conn.open)G.conn.send(d);}
 
 function backToMenu(){if(G.conn){try{G.conn.close();}catch(e){}G.conn=null;}if(G.peer){try{G.peer.destroy();}catch(e){}G.peer=null;}G.isOnline=false;G.isAI=false;document.querySelectorAll('.cafe-bg,.lobby,.game-wrap,.modal-bg').forEach(el=>el.classList.add('hidden'));document.getElementById('menuScreen').classList.remove('hidden');document.getElementById('menuScreen').style.display='';}
+function restartGame(){document.getElementById('gameOverModal').classList.add('hidden');let matchOver=G.scores.w>=31||G.scores.b>=31;if(matchOver){G.scores={w:0,b:0};}initRound();if(G.isOnline)sendMsg({type:'restart',matchOver:matchOver,scores:G.scores});render();showInitModal();}
 
-function restartGame(){
-    document.getElementById('gameOverModal').classList.add('hidden');
-    let matchOver = G.scores.w >= 31 || G.scores.b >= 31;
-    if (matchOver) {
-        G.scores = { w: 0, b: 0 };
-    }
-    initRound();
-    if(G.isOnline) sendMsg({type:'restart', matchOver: matchOver, scores: G.scores});
-    render();
-    showInitModal();
-}
-
-function showRoundOver(winner, roundScore){
-    let matchOver = G.scores[winner] >= 31;
-    let winName = winner === 'w' ? 'الأبيض' : 'الأسود';
-    
-    let title = matchOver ? 'انتهت المباراة!' : 'انتهت الجولة!';
-    let msg = winName + ' كسب ' + roundScore + ' نقطة\nالإجمالي: ' + G.scores[winner] + ' / 31';
-    
-    let isMeWin = !G.isOnline || winner === G.myColor;
-    if(G.isAI && winner === 'b') isMeWin = false;
-    
-    document.getElementById('goTitle').textContent = matchOver ? (isMeWin ? 'فزت المباراة! 🏆' : 'خسرت المباراة!') : title;
-    document.getElementById('goMsg').textContent = msg;
-    
-    let btnText = matchOver ? 'ماتش جديد' : 'الجولة الجاية';
-    document.getElementById('goBtn').innerHTML = '<i class="fas fa-redo"></i> ' + btnText;
-    
-    document.getElementById('gameOverModal').classList.remove('hidden');
-    
-    if (matchOver && isMeWin) spawnConfetti();
-}
+function showRoundOver(winner,roundScore){let matchOver=G.scores[winner]>=31;let winName=winner==='w'?'الأبيض':'الأسود';let title=matchOver?'انتهت المباراة!':'انتهت الجولة!';let marsText=roundScore===2?' (مارس!)':'';let msg=winName+' كسب '+roundScore+' نقطة'+marsText+'\nالإجمالي: '+G.scores[winner]+' / 31';let isMeWin=!G.isOnline||winner===G.myColor;if(G.isAI&&winner==='b')isMeWin=false;document.getElementById('goTitle').textContent=matchOver?(isMeWin?'فزت المباراة! 🏆':'خسرت المباراة!'):title;document.getElementById('goMsg').textContent=msg;let btnText=matchOver?'ماتش جديد':'الجولة الجاية';document.getElementById('goBtn').innerHTML='<i class="fas fa-redo"></i> '+btnText;document.getElementById('gameOverModal').classList.remove('hidden');if(matchOver&&isMeWin)spawnConfetti();}
 
 function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 function spawnConfetti(){let cols=['#D4AF37','#f0d060','#c41e3a','#0f5132','#f5e6c8','#b87333'];for(let i=0;i<50;i++){let el=document.createElement('div');el.style.cssText=`position:fixed;width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;background:${cols[i%6]};left:${Math.random()*100}vw;top:-10px;border-radius:${Math.random()>.5?'50%':'2px'};z-index:300;pointer-events:none;animation:confettiFall ${2+Math.random()*2.5}s ease-in forwards;animation-delay:${Math.random()*1.5}s`;document.body.appendChild(el);setTimeout(()=>el.remove(),6000);}}

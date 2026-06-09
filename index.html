@@ -165,19 +165,18 @@ function playSound(type){
         if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
         
         if(type==='roll'){
-            // محاكاة صوت رمي الزهر الخشبي
-            const bufferSize = audioCtx.sampleRate * 0.15; // 150 مللي ثانية
+            const bufferSize = audioCtx.sampleRate * 0.15;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 4); // صوت ضوضاء بيتبسط بسرعة
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 4);
             }
             const source = audioCtx.createBufferSource();
             source.buffer = buffer;
             
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.value = 1200; // تردد يشبه الخشب
+            filter.frequency.value = 1200; 
             filter.Q.value = 1;
             
             const gainNode = audioCtx.createGain();
@@ -222,7 +221,6 @@ function updateUI(){let my=!G.isOnline||G.turn===G.myColor;if(G.isAI&&G.turn==='
 function canBearOff(c){if(c==='w'){for(let i=6;i<24;i++)if(G.pts[i].c==='w'&&G.pts[i].n>0)return false;}else{for(let i=0;i<18;i++)if(G.pts[i].c==='b'&&G.pts[i].n>0)return false;}return true;}
 function noHigher(c,from){if(c==='w'){for(let j=from+1;j<=5;j++)if(G.pts[j].c==='w'&&G.pts[j].n>0)return false;}else{for(let j=from-1;j>=18;j--)if(G.pts[j].c==='b'&&G.pts[j].n>0)return false;}return true;}
 
-// رجوع لقواعد المحبوسة: حجر واحد من الخصم بيمنع النزول
 function canLand(c,i){if(i<0||i>23)return false;let p=G.pts[i];if(p.n>0&&p.c!==c)return false;return true;}
 
 function getValidDests(from){
@@ -267,14 +265,11 @@ function hasAnyMove(){if(!G.ml.length)return false;for(let i=0;i<24;i++)if(G.pts
 function execMove(from,to,die,combined,die1,die2){
     let c=G.turn;
     let opp=c==='w'?'b':'w';
-    
-    // تم إزالة فحص الـ 6 قفلات عشان نسمح بالحبس
 
     G.moveStack.push({from,to,die,combined,combinedDie1:die1,combinedDie2:die2,off:{...G.off},pts:G.pts.map(p=>({...p})),ml:[...G.ml],lockSteps:{...G.lockSteps},unlocked:{...G.unlocked}});
     
     G.pts[from].n--;if(!G.pts[from].n)G.pts[from].c=null;
     
-    // تم إزالة نظام الضرب، الحجر الواحد بيمنع النزول
     if(to!=='off'){
         G.pts[to].n++;
         G.pts[to].c=c;
@@ -292,8 +287,10 @@ function execMove(from,to,die,combined,die1,die2){
 
     if(G.off[c]===15){
         G.phase='over';
-        let roundScore=G.off[opp]>0?1:2;
-        G.scores[c]+=roundScore;if(G.isOnline)sendMsg({type:'state',state:getState()});render();showRoundOver(c,roundScore);return true;
+        // تعديل حساب النقاط: النقاط = عدد أحجار الخصم اللي مسحبهاش
+        let roundScore = 15 - G.off[opp];
+        G.scores[c]+=roundScore;
+        if(G.isOnline)sendMsg({type:'state',state:getState()});render();showRoundOver(c,roundScore);return true;
     }
     if(G.isOnline)sendMsg({type:'state',state:getState()});render();
     if(!G.ml.length||!hasAnyMove()){if(G.ml.length)toast('مفيش حركات كمان');G.phase='ending';setTimeout(()=>endTurn(),800);}
@@ -308,10 +305,7 @@ function handleRoll(){if(G.phase!=='roll')return;playSound('roll');let d1=Math.f
 function aiTurn(){if(G.phase==='roll'){handleRoll();if(G.phase==='move')setTimeout(aiMakeMove,700);}}
 function aiMakeMove(){if(G.phase!=='move'||G.turn!=='b')return;if(!G.ml.length||!hasAnyMove()){endTurn();return;}let best=findBestMove();if(best){execMove(best.from,best.to,best.die,best.combined,best.die1,best.die2);if(G.phase==='move')setTimeout(aiMakeMove,600);}else endTurn();}
 function findBestMove(){let best=null,bestScore=-Infinity;for(let i=0;i<24;i++){if(G.pts[i].c!=='b'||G.pts[i].n<=0)continue;let dests=getValidDests(i);for(let d of dests){let s=scoreAIMove(i,d.to,d.die,d.combined);if(s>bestScore){bestScore=s;best={from:i,to:d.to,die:d.die,combined:d.combined||false,die1:d.die1||0,die2:d.die2||0};}}}return best;}
-function scoreAIMove(from,to,die,combined){let s=0;if(to==='off')return 200;s+=(to-from)*3;if(to>=18)s+=40;
-// في المحبوسة، الحجر الواحد سد، فالأحسن انشر وأبني سدود
-if(G.pts[to].c!=='b'||G.pts[to].n===0)s+=15;
-s+=(23-from)*0.5;if(combined)s+=15;let oppNear=false;for(let j=Math.max(0,to-3);j<=Math.min(23,to+3);j++){if(G.pts[j].c==='w'&&G.pts[j].n>=1)oppNear=true;}if(!oppNear)s+=10;return s;}
+function scoreAIMove(from,to,die,combined){let s=0;if(to==='off')return 200;s+=(to-from)*3;if(to>=18)s+=40;if(G.pts[to].c!=='b'||G.pts[to].n===0)s+=15;s+=(23-from)*0.5;if(combined)s+=15;let oppNear=false;for(let j=Math.max(0,to-3);j<=Math.min(23,to+3);j++){if(G.pts[j].c==='w'&&G.pts[j].n>=1)oppNear=true;}if(!oppNear)s+=10;return s;}
 
 function doInitRoll(){
     if(G.isOnline && G.myColor==='b') return; 
@@ -355,13 +349,13 @@ function setupConn(){G.conn.on('data',data=>{if(data.type==='roll'){G.dice=[data
 document.getElementById('initMsg').textContent='الأبيض: '+data.val;}else if(data.step==='b'){G.initRolls.b=data.val;drawInitDie('initDieB',data.val);if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل!';G.initStep=0;setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);document.getElementById('initRollBtn').style.display='';},800);return;}G.initStep=2;setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();},1500);}}else if(data.type==='restart'){if(data.matchOver)G.scores=data.scores||{w:0,b:0};initRound();render();showInitModal();toast('لعبة جديدة!');}});G.conn.on('close',()=>{toast('صاحبك فصل، هتكمل ضد الكمبيوتر');G.isOnline=false;G.isAI=true;document.getElementById('blackLabel').textContent='الكمبيوتر';updateUI();if(G.turn==='b'&&G.phase==='roll')setTimeout(aiTurn,800);});}
 
 function getState(){return{pts:G.pts.map(p=>({c:p.c,n:p.n})),off:{...G.off},turn:G.turn,dice:[...G.dice],ml:[...G.ml],phase:G.phase,scores:{...G.scores},lockSteps:{...G.lockSteps},unlocked:{...G.unlocked}};}
-function applyState(s){G.pts=s.pts;G.off=s.off;G.turn=s.turn;G.dice=s.dice;G.ml=s.ml;G.phase=s.phase;if(s.scores)G.scores=s.scores;if(s.lockSteps)G.lockSteps=s.lockSteps;if(s.unlocked)G.unlocked=s.unlocked;G.sel=-1;G.validDests=[];G.moveStack=[];if(G.phase==='over'){let winner=G.off.w===15?'w':'b';let opp=winner==='w'?'b':'w';let oppOnBoard=15-G.off[opp];showRoundOver(winner,oppOnBoard);}}
+function applyState(s){G.pts=s.pts;G.off=s.off;G.turn=s.turn;G.dice=s.dice;G.ml=s.ml;G.phase=s.phase;if(s.scores)G.scores=s.scores;if(s.lockSteps)G.lockSteps=s.lockSteps;if(s.unlocked)G.unlocked=s.unlocked;G.sel=-1;G.validDests=[];G.moveStack=[];if(G.phase==='over'){let winner=G.off.w===15?'w':'b';let opp=winner==='w'?'b':'w';let roundScore=15-G.off[opp];showRoundOver(winner,roundScore);}}
 function sendMsg(d){if(G.conn&&G.conn.open)G.conn.send(d);}
 
 function backToMenu(){if(G.conn){try{G.conn.close();}catch(e){}G.conn=null;}if(G.peer){try{G.peer.destroy();}catch(e){}G.peer=null;}G.isOnline=false;G.isAI=false;document.querySelectorAll('.cafe-bg,.lobby,.game-wrap,.modal-bg').forEach(el=>el.classList.add('hidden'));document.getElementById('menuScreen').classList.remove('hidden');document.getElementById('menuScreen').style.display='';}
 function restartGame(){document.getElementById('gameOverModal').classList.add('hidden');let matchOver=G.scores.w>=31||G.scores.b>=31;if(matchOver){G.scores={w:0,b:0};}initRound();if(G.isOnline)sendMsg({type:'restart',matchOver:matchOver,scores:G.scores});render();showInitModal();}
 
-function showRoundOver(winner,roundScore){let matchOver=G.scores[winner]>=31;let winName=winner==='w'?'الأبيض':'الأسود';let title=matchOver?'انتهت المباراة!':'انتهت الجولة!';let marsText=roundScore===2?' (مارس!)':'';let msg=winName+' كسب '+roundScore+' نقطة'+marsText+'\nالإجمالي: '+G.scores[winner]+' / 31';let isMeWin=!G.isOnline||winner===G.myColor;if(G.isAI&&winner==='b')isMeWin=false;document.getElementById('goTitle').textContent=matchOver?(isMeWin?'فزت المباراة! 🏆':'خسرت المباراة!'):title;document.getElementById('goMsg').textContent=msg;let btnText=matchOver?'ماتش جديد':'الجولة الجاية';document.getElementById('goBtn').innerHTML='<i class="fas fa-redo"></i> '+btnText;document.getElementById('gameOverModal').classList.remove('hidden');if(matchOver&&isMeWin)spawnConfetti();}
+function showRoundOver(winner,roundScore){let matchOver=G.scores[winner]>=31;let winName=winner==='w'?'الأبيض':'الأسود';let title=matchOver?'انتهت المباراة!':'انتهت الجولة!';let marsText=roundScore===15?' (مارس!)':'';let msg=winName+' كسب '+roundScore+' نقطة'+marsText+'\nالإجمالي: '+G.scores[winner]+' / 31';let isMeWin=!G.isOnline||winner===G.myColor;if(G.isAI&&winner==='b')isMeWin=false;document.getElementById('goTitle').textContent=matchOver?(isMeWin?'فزت المباراة! 🏆':'خسرت المباراة!'):title;document.getElementById('goMsg').textContent=msg;let btnText=matchOver?'ماتش جديد':'الجولة الجاية';document.getElementById('goBtn').innerHTML='<i class="fas fa-redo"></i> '+btnText;document.getElementById('gameOverModal').classList.remove('hidden');if(matchOver&&isMeWin)spawnConfetti();}
 
 function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 function spawnConfetti(){if(confettiActive)return;confettiActive=true;let cols=['#D4AF37','#f0d060','#c41e3a','#0f5132','#f5e6c8','#b87333'];for(let i=0;i<50;i++){let el=document.createElement('div');el.style.cssText=`position:fixed;width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;background:${cols[i%6]};left:${Math.random()*100}vw;top:-10px;border-radius:${Math.random()>.5?'50%':'2px'};z-index:300;pointer-events:none;animation:confettiFall ${2+Math.random()*2.5}s ease-in forwards;animation-delay:${Math.random()*1.5}s`;document.body.appendChild(el);}setTimeout(()=>confettiActive=false,6000);}

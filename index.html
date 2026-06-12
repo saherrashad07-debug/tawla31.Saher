@@ -69,7 +69,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 .lantern::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse,var(--amber),transparent);border-radius:50% 50% 40% 40%;animation:lanternGlow 3s ease-in-out infinite}
 @keyframes lanternGlow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
 
-/* Quick Chat Styles */
 .chat-container{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:900;display:flex;flex-direction:column;align-items:center;gap:8px}
 .quick-chat-menu{background:rgba(15,8,3,.95);border:1px solid var(--gold);border-radius:12px;padding:8px;display:flex;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .quick-chat-btn{background:linear-gradient(135deg,var(--wood2),var(--wood3));color:var(--cream);border:1px solid rgba(212,175,55,.2);padding:6px 12px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all .2s}
@@ -155,7 +154,6 @@ body{font-family:'Cairo',sans-serif;background:#060301;min-height:100vh;overflow
 </div>
 </div>
 
-<!-- Quick Chat UI -->
 <div id="chatContainer" class="chat-container hidden">
     <div id="quickChatMenu" class="quick-chat-menu hidden">
         <button class="quick-chat-btn" onclick="sendChatMsg('حظ سعيد')">حظ سعيد</button>
@@ -175,7 +173,7 @@ const PH=195,CR=PW/2-3;
 const CC={fr:'#2a1209',fr2:'#5c2d12',fr3:'#7a4a24',felt:'#0f5132',t1:'#c9a06c',t2:'#7a2e28',barC:'#1f0e05',trayC:'#1f0e05'};
 let initTimeout=null;
 let confettiActive=false;
-let G={pts:[],off:{w:0,b:0},turn:'w',dice:[],ml:[],phase:'init',sel:-1,validDests:[],moveStack:[],myColor:null,isOnline:false,isAI:false,peer:null,conn:null,roomCode:'',initStep:0,initRolls:{w:0,b:0},scores:{w:0,b:0},lockSteps:{w:0,b:0},unlocked:{w:false,b:false}};
+let G={pts:[],off:{w:0,b:0},turn:'w',dice:[],ml:[],phase:'init',sel:-1,validDests:[],moveStack:[],myColor:null,isOnline:false,isAI:false,peer:null,conn:null,roomCode:'',initStep:0,initRolls:{w:0,b:0},scores:{w:0,b:0},lockSteps:{w:0,b:0},unlocked:{w:false,b:false}, firstRound: true, previousWinner: null};
 
 let validSources = [];
 let isAnimating = false;
@@ -193,13 +191,10 @@ function playSound(type){
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 4);
-            const source = audioCtx.createBufferSource();
-            source.buffer = buffer;
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 1;
+            const source = audioCtx.createBufferSource(); source.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 1;
             const gainNode = audioCtx.createGain(); gainNode.gain.value = 0.25;
-            source.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
-            source.start();
+            source.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination); source.start();
         } 
         else if(type==='move'){
             let osc=audioCtx.createOscillator();let gain=audioCtx.createGain();
@@ -223,7 +218,7 @@ function playSound(type){
 }
 
 function createSteam(){let c=document.getElementById('steamContainer');if(!c)return;setInterval(()=>{if(document.hidden||document.getElementById('menuScreen').classList.contains('hidden'))return;let s=document.createElement('div');s.className='steam';s.style.left=Math.random()*80+10+'%';s.style.bottom=Math.random()*20+'%';s.style.height=20+Math.random()*30+'px';s.style.animationDuration=3+Math.random()*3+'s';c.appendChild(s);setTimeout(()=>s.remove(),6000);},400);}
-function initMatch(){G.scores={w:0,b:0};initRound();}
+function initMatch(){G.scores={w:0,b:0}; G.firstRound = true; G.previousWinner = null; initRound();}
 function initRound(){G.pts=Array.from({length:24},()=>({c:null,n:0}));G.pts[23]={c:'w',n:15};G.pts[0]={c:'b',n:15};G.off={w:0,b:0};G.dice=[];G.ml=[];G.phase='init';G.sel=-1;G.validDests=[];G.moveStack=[];G.initStep=0;G.initRolls={w:0,b:0};G.lockSteps={w:0,b:0};G.unlocked={w:false,b:false}; calculateValidSources();}
 
 const cv=document.getElementById('boardCanvas');
@@ -341,13 +336,11 @@ function canPlayDie(die) {
     let homePt = c==='w'?23:0;
     for(let i=0; i<24; i++) {
         if(G.pts[i].c===c && G.pts[i].n>0) {
-            // Strict Lock Check
             if(!G.unlocked[c] && i===homePt) {
                 let allAtHome = true;
                 for(let j=0; j<24; j++) { if(j===homePt)continue; if(G.pts[j].c===c&&G.pts[j].n>0){allAtHome=false;break;} }
-                if(!allAtHome) continue; // Skip homePt if locked and checkers are out
+                if(!allAtHome) continue;
             }
-
             let to = c==='w' ? i-die : i+die;
             if (to>=0 && to<=23 && canLand(c,to)) return true;
             if (canBearOff(c)) { let dist = c==='w' ? i+1 : 24-i; if (die===dist || (die>dist && noHigher(c,i))) return true; }
@@ -375,17 +368,13 @@ function getValidDests(from){
     let ds=[],c=G.turn,seen=new Set();
     let homePt=c==='w'?23:0;
     
-    // Strict Lock Rule: Cannot move from homePt unless all checkers are still there
     if(!G.unlocked[c] && from===homePt){
         let allAtHome = true;
         for(let i=0; i<24; i++) {
             if(i === homePt) continue;
-            if(G.pts[i].c === c && G.pts[i].n > 0) {
-                allAtHome = false;
-                break;
-            }
+            if(G.pts[i].c === c && G.pts[i].n > 0) { allAtHome = false; break; }
         }
-        if(!allAtHome) return ds; // Strict lock! Cannot move from home if checkers are out
+        if(!allAtHome) return ds;
     }
 
     for(let die of G.ml){
@@ -472,10 +461,18 @@ function applyExecutedMove(from,to,die,combined,die1,die2){
         G.phase='over';
         let roundScore = 15 - G.off[opp];
         G.scores[c]+=roundScore;
+        G.previousWinner = c; // Store winner for next round
         if(G.isOnline)sendMsg({type:'state',state:getState()});render();showRoundOver(c,roundScore);return;
     }
     if(G.isOnline)sendMsg({type:'state',state:getState()});
-    if(!G.ml.length||!hasAnyMove()){if(G.ml.length)toast('مفيش حركات كمان');G.phase='ending';setTimeout(()=>endTurn(),800);}
+    
+    if(!G.ml.length||!hasAnyMove()){
+        if(G.ml.length)toast('مفيش حركات كمان');
+        G.phase='ending';
+        setTimeout(()=>endTurn(),800);
+    } else if (G.isAI && G.turn === 'b') {
+        setTimeout(aiMakeMove, 400);
+    }
 }
 
 function undoMove(){if(!G.moveStack.length||isAnimating)return;let s=G.moveStack.pop();G.off=s.off;G.pts=s.pts;G.ml=s.ml;G.lockSteps=s.lockSteps;G.unlocked=s.unlocked;G.sel=-1;G.validDests=[];calculateValidSources();if(G.isOnline)sendMsg({type:'state',state:getState()});render();}
@@ -498,14 +495,31 @@ function handleRoll(){
             G.phase='move';G.moveStack=[];enforceDieRules();
             if(G.isOnline)sendMsg({type:'roll',d1,d2});
             calculateValidSources();render();
-            if(!hasAnyMove()){toast('مفيش حركات!');G.phase='ending';setTimeout(()=>endTurn(),1200);}
+            if(!hasAnyMove()){
+                toast('مفيش حركات!');G.phase='ending';setTimeout(()=>endTurn(),1200);
+            } else if (G.isAI && G.turn === 'b') {
+                setTimeout(aiMakeMove, 400);
+            }
         }
     }, 60);
 }
 
 // --- AI ---
-function aiTurn(){if(G.phase==='roll'){handleRoll();if(G.phase==='move')setTimeout(aiMakeMove,700);}}
-function aiMakeMove(){if(G.phase!=='move'||G.turn!=='b'||isAnimating)return;if(!G.ml.length||!hasAnyMove()){endTurn();return;}let best=findBestMove();if(best){execMove(best.from,best.to,best.die,best.combined,best.die1,best.die2);if(G.phase==='move')setTimeout(aiMakeMove,600);}else endTurn();}
+function aiTurn(){
+    if(G.phase==='roll'){
+        handleRoll();
+    }
+}
+function aiMakeMove(){
+    if(G.phase!=='move'||G.turn!=='b'||isAnimating) return;
+    if(!G.ml.length||!hasAnyMove()){endTurn();return;}
+    let best=findBestMove();
+    if(best){
+        execMove(best.from,best.to,best.die,best.combined,best.die1,best.die2);
+    } else {
+        endTurn();
+    }
+}
 function findBestMove(){let best=null,bestScore=-Infinity;for(let i=0;i<24;i++){if(G.pts[i].c!=='b'||G.pts[i].n<=0)continue;let dests=getValidDests(i);for(let d of dests){let s=scoreAIMove(i,d.to,d.die,d.combined);if(s>bestScore){bestScore=s;best={from:i,to:d.to,die:d.die,combined:d.combined||false,die1:d.die1||0,die2:d.die2||0};}}}return best;}
 function scoreAIMove(from,to,die,combined){let s=0;if(to==='off') return 300;s+=(to-from)*2;if(to>=18) s+=20;if(G.pts[to].c==='b'&&G.pts[to].n===1) s+=50;if(G.pts[from].n===2) s-=25;if(G.pts[to].c!=='b'||G.pts[to].n===0){for(let j=0;j<24;j++){if(G.pts[j].c==='w'&&G.pts[j].n>0){let dist=Math.abs(j-to);if(dist<=6) s-=30;}}}if(combined) s+=10;return s;}
 
@@ -524,10 +538,10 @@ function doInitRoll(){
         else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}
         else{document.getElementById('initMsg').textContent='تعادل! ارموا تاني';G.initStep=0;btn.innerHTML='<i class="fas fa-dice"></i> ارمي تاني';setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}
         G.initStep=2;btn.innerHTML='<i class="fas fa-play"></i> يلا نبدأ';
-        if(G.isAI){if(initTimeout)clearTimeout(initTimeout);initTimeout=setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();if(G.turn==='b')setTimeout(aiTurn,600);},1200);}
+        if(G.isAI){if(initTimeout)clearTimeout(initTimeout);initTimeout=setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.firstRound = false; G.phase='roll';render();if(G.turn==='b')setTimeout(aiTurn,600);},1200);}
     }else{
         if(initTimeout)clearTimeout(initTimeout);
-        document.getElementById('initModal').classList.add('hidden');G.phase='roll';render();
+        document.getElementById('initModal').classList.add('hidden');G.firstRound = false; G.phase='roll';render();
         if(G.isAI&&G.turn==='b')setTimeout(aiTurn,600);
     }
 }
@@ -596,8 +610,21 @@ function setupConn(){
             applyState(data.state);calculateValidSources();render();
         }else if(data.type==='initRoll'){
             if(data.step==='w'){G.initRolls.w=data.val;drawInitDie('initDieW',data.val);G.initStep=1;document.getElementById('initRollBtn').style.display='none'; document.getElementById('initMsg').textContent='الأبيض: '+data.val;}
-            else if(data.step==='b'){G.initRolls.b=data.val;drawInitDie('initDieB',data.val);if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل! المستضيف هيرمي تاني...';G.initStep=0;setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}G.initStep=2;setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.phase='roll';calculateValidSources();render();},1500);}
-        }else if(data.type==='restart'){if(data.matchOver)G.scores=data.scores||{w:0,b:0};initRound();render();showInitModal();toast('لعبة جديدة!');}
+            else if(data.step==='b'){G.initRolls.b=data.val;drawInitDie('initDieB',data.val);if(G.initRolls.w>G.initRolls.b){G.turn='w';document.getElementById('initMsg').textContent='الأبيض يبدأ! ('+G.initRolls.w+' مقابل '+G.initRolls.b+')';}else if(G.initRolls.b>G.initRolls.w){G.turn='b';document.getElementById('initMsg').textContent='الأسود يبدأ! ('+G.initRolls.b+' مقابل '+G.initRolls.w+')';}else{document.getElementById('initMsg').textContent='تعادل! المستضيف هيرمي تاني...';G.initStep=0;setTimeout(()=>{drawInitDie('initDieW',0);drawInitDie('initDieB',0);},800);return;}G.initStep=2;setTimeout(()=>{document.getElementById('initModal').classList.add('hidden');G.firstRound = false; G.phase='roll';calculateValidSources();render();},1500);}
+        }else if(data.type==='restart'){
+            if(data.matchOver) { G.scores=data.scores||{w:0,b:0}; G.firstRound = true; } else { G.firstRound = false; }
+            G.previousWinner = data.nextTurn || 'w';
+            initRound();
+            if (G.firstRound) {
+                showInitModal();
+            } else {
+                G.turn = G.previousWinner;
+                G.phase = 'roll';
+                calculateValidSources();
+                render();
+            }
+            toast('لعبة جديدة!');
+        }
         else if(data.type==='chat'){ playSound('chat'); toast('صاحبك: ' + data.text); }
     });
     G.conn.on('close',()=>{toast('صاحبك فصل، هتكمل ضد الكمبيوتر');G.isOnline=false;G.isAI=true;document.getElementById('blackLabel').textContent='الكمبيوتر';document.getElementById('chatContainer').classList.add('hidden');updateUI();if(G.turn==='b'&&G.phase==='roll')setTimeout(aiTurn,800);});
@@ -608,7 +635,34 @@ function applyState(s){G.pts=s.pts;G.off=s.off;G.turn=s.turn;G.dice=s.dice;G.ml=
 function sendMsg(d){if(G.conn&&G.conn.open)G.conn.send(d);}
 
 function backToMenu(){if(G.conn){try{G.conn.close();}catch(e){}G.conn=null;}if(G.peer){try{G.peer.destroy();}catch(e){}G.peer=null;}G.isOnline=false;G.isAI=false;document.querySelectorAll('.cafe-bg,.lobby,.game-wrap,.modal-bg').forEach(el=>el.classList.add('hidden'));document.getElementById('menuScreen').classList.remove('hidden');document.getElementById('menuScreen').style.display='';document.getElementById('chatContainer').classList.add('hidden');}
-function restartGame(){document.getElementById('gameOverModal').classList.add('hidden');let matchOver=G.scores.w>=31||G.scores.b>=31;if(matchOver){G.scores={w:0,b:0};}initRound();if(G.isOnline)sendMsg({type:'restart',matchOver:matchOver,scores:G.scores});render();showInitModal();}
+
+function restartGame(){
+    document.getElementById('gameOverModal').classList.add('hidden');
+    let matchOver = G.scores.w >= 31 || G.scores.b >= 31;
+    if(matchOver){
+        G.scores = {w:0, b:0};
+        G.firstRound = true; // It's a completely new match
+    }
+    
+    let nextTurn = G.previousWinner || 'w'; // Winner starts next round
+    
+    initRound();
+    
+    if(G.isOnline) sendMsg({type:'restart', matchOver:matchOver, scores:G.scores, nextTurn: nextTurn});
+    
+    if (G.firstRound) {
+        showInitModal(); // Roll to see who starts
+    } else {
+        // Winner of previous round starts automatically
+        G.turn = nextTurn;
+        G.phase = 'roll';
+        calculateValidSources();
+        render();
+        if(G.isAI && G.turn === 'b') {
+            setTimeout(aiTurn, 800);
+        }
+    }
+}
 
 function showRoundOver(winner,roundScore){let matchOver=G.scores[winner]>=31;let winName=winner==='w'?'الأبيض':'الأسود';let title=matchOver?'انتهت المباراة!':'انتهت الجولة!';let msg=winName+' كسب '+roundScore+' نقطة\nالإجمالي: '+G.scores[winner]+' / 31';let isMeWin=!G.isOnline||winner===G.myColor;if(G.isAI&&winner==='b')isMeWin=false;document.getElementById('goTitle').textContent=matchOver?(isMeWin?'فزت المباراة! 🏆':'خسرت المباراة!'):title;document.getElementById('goMsg').textContent=msg;let btnText=matchOver?'ماتش جديد':'الجولة الجاية';document.getElementById('goBtn').innerHTML='<i class="fas fa-redo"></i> '+btnText;document.getElementById('gameOverModal').classList.remove('hidden');if(matchOver&&isMeWin)spawnConfetti();}
 
